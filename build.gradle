@@ -1,1 +1,16 @@
-// Check GETTING_STARTED.md for information regarding usage.
+plugins {
+    id "com.diffplug.spotless" apply false
+}
+
+subprojects {
+    apply plugin: "java"
+    apply plugin: "com.diffplug.spotless"
+    spotless {
+        java {
+            palantirJavaFormat()
+            removeUnusedImports()
+            importOrder("java", "com.liferay", "com.solteq")
+        }
+    }
+    compileJava.dependsOn "spotlessApply"
+}

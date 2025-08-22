@@ -1,0 +1,3 @@
+Bundle-Name: Solteq Site Initializer Override
+Bundle-SymbolicName: com.solteq.liferay.site.override
+Bundle-Version: 1.0.0

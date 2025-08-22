@@ -1,0 +1,7 @@
+Bundle-Name: Solteq Commerce Site Initializer
+Bundle-SymbolicName: com.solteq.commerce.site.initializer
+Bundle-Version: 1.0.0
+Liferay-Site-Initializer-Feature-Flag: LPD-20379
+Liferay-Site-Initializer-Name: Solteq Commerce Site Initializer
+Provide-Capability: liferay.site.initializer
+Web-ContextPath: /solteq-commerce-site-initializer
