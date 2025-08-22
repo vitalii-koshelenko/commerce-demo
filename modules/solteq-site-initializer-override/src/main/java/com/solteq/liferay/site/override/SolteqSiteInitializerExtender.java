@@ -1,10 +1,7 @@
 package com.solteq.liferay.site.override;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.servlet.ServletContext;
 
 import com.liferay.account.service.*;
@@ -87,11 +84,24 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.runtime.ServiceComponentRuntime;
+import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 import org.osgi.util.tracker.BundleTracker;
 import org.osgi.util.tracker.BundleTrackerCustomizer;
 
 @Component(service = SolteqSiteInitializerExtender.class)
 public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<SolteqSiteInitializerExtension> {
+
+    // ------------------------------- <Components Blacklist> ----------------------------------------------------------
+    private ComponentDescriptionDTO componentDescriptionDTO;
+
+    public static final String BUNDLE_NAME = "com.liferay.site.initializer.extender";
+    public static final String COMPONENT_NAME =
+            "com.liferay.site.initializer.extender.internal.SiteInitializerExtender";
+
+    @Reference
+    private ServiceComponentRuntime serviceComponentRuntime;
+    // ------------------------------- </Components Blacklist> ---------------------------------------------------------
 
     @Override
     public SolteqSiteInitializerExtension addingBundle(Bundle bundle, BundleEvent bundleEvent) {
@@ -234,6 +244,20 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
                 _addFile(file);
             }
         }
+
+        // Disable original SiteInitializerExtender when registering custom one
+        try {
+            Bundle[] bundles = bundleContext.getBundles();
+            Bundle targetBundle = Arrays.stream(bundles)
+                    .filter(bnd -> BUNDLE_NAME.equals(bnd.getSymbolicName()))
+                    .findFirst()
+                    .orElse(null);
+            componentDescriptionDTO = serviceComponentRuntime.getComponentDescriptionDTO(targetBundle, COMPONENT_NAME);
+            serviceComponentRuntime.disableComponent(componentDescriptionDTO);
+            _log.info(String.format("Component '%s' disabled", COMPONENT_NAME));
+        } catch (Exception e) {
+            _log.error(String.format("Unable to disable component %s, cause:  %s", COMPONENT_NAME, e.getMessage()));
+        }
     }
 
     @Deactivate
@@ -248,6 +272,14 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
         }
 
         _fileSiteInitializerExtensions.clear();
+
+        // Enable original SiteInitializerExtender when unregistering custom one
+        try {
+            serviceComponentRuntime.enableComponent(componentDescriptionDTO);
+            _log.info(String.format("Component '%s' enabled", COMPONENT_NAME));
+        } catch (Exception e) {
+            _log.error(String.format("Unable to enable component %s, cause:  %s", COMPONENT_NAME, e.getMessage()));
+        }
     }
 
     private void _addFile(File file) throws Exception {

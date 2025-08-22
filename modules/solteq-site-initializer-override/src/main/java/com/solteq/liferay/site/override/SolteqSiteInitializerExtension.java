@@ -266,6 +266,8 @@ public class SolteqSiteInitializerExtension {
                 SiteInitializer.class,
                 MapUtil.singletonDictionary("site.initializer.key", siteBundle.getSymbolicName()));
 
+        _log.info("Registered Site Initializer for bundle: " + siteBundle.getSymbolicName());
+
         if (servletContext == null) {
             ServiceDependency serviceDependency = _dependencyManager.createServiceDependency();
 
