@@ -1,4 +1,4 @@
-package com.solteq.liferay.site.override;
+package com.solteq.liferay.site.initializer.override;
 
 import java.io.*;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 
 @Component(
         property = {
-            "osgi.http.whiteboard.servlet.name=com.solteq.liferay.site.override.SolteqFileBackedThumbnailServlet",
+            "osgi.http.whiteboard.servlet.name=com.solteq.liferay.site.initializer.override.SolteqFileBackedThumbnailServlet",
             "osgi.http.whiteboard.servlet.pattern=/file-backed-site-initializer/*",
             "servlet.init.httpMethods=GET"
         },

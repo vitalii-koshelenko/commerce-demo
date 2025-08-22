@@ -1,0 +1,1 @@
+create index IX_B9F54656 on sq_SIAuditEntry (groupId);

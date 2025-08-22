@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<model-hints>
+	<model name="com.solteq.liferay.site.initializer.audit.model.SIAuditEntry">
+		<field name="siAuditEntryId" type="long" />
+		<field name="groupId" type="long" />
+		<field name="companyId" type="long" />
+		<field name="userId" type="long" />
+		<field name="userName" type="String" />
+		<field name="createDate" type="Date" />
+		<field name="siKey" type="String" />
+		<field name="processingTime" type="long" />
+		<field name="status" type="int" />
+		<field name="message" type="String">
+			<hint name="max-length">2000</hint>
+		</field>
+	</model>
+</model-hints>

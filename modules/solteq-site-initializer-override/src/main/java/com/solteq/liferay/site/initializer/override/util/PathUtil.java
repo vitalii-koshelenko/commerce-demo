@@ -1,4 +1,4 @@
-package com.solteq.liferay.site.override.util;
+package com.solteq.liferay.site.initializer.override.util;
 
 public class PathUtil {
 

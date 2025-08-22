@@ -1,4 +1,4 @@
-package com.solteq.liferay.site.override;
+package com.solteq.liferay.site.initializer.override;
 
 import java.io.File;
 import java.util.Arrays;
@@ -70,8 +70,9 @@ import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 import com.liferay.template.service.TemplateEntryLocalService;
 
-import com.solteq.liferay.site.override.util.FileBackedBundleDelegate;
-import com.solteq.liferay.site.override.util.FileBackedServletContextDelegate;
+import com.solteq.liferay.site.initializer.audit.service.SIAuditEntryLocalService;
+import com.solteq.liferay.site.initializer.override.util.FileBackedBundleDelegate;
+import com.solteq.liferay.site.initializer.override.util.FileBackedServletContextDelegate;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -143,6 +144,7 @@ public class SolteqSiteInitializerFactoryImpl implements SiteInitializerFactory 
                 null);
 
         SolteqBundleSiteInitializer bundleSiteInitializer = new SolteqBundleSiteInitializer(
+                siAuditEntryLocalService,
                 _accountEntryLocalService,
                 _accountEntryOrganizationRelLocalService,
                 _accountGroupLocalService,
@@ -239,6 +241,9 @@ public class SolteqSiteInitializerFactoryImpl implements SiteInitializerFactory 
 
         return bundleSiteInitializer;
     }
+
+    @Reference
+    private SIAuditEntryLocalService siAuditEntryLocalService;
 
     @Reference
     private AccountEntryLocalService _accountEntryLocalService;

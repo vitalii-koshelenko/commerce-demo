@@ -1,4 +1,6 @@
-package com.solteq.liferay.site.override;
+package com.solteq.liferay.site.initializer.override;
+
+import javax.servlet.ServletContext;
 
 import com.liferay.account.service.*;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
@@ -49,6 +51,7 @@ import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.*;
 import com.liferay.portal.kernel.settings.ArchivedSettingsFactory;
+import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.zip.ZipWriterFactory;
 import com.liferay.portal.language.override.service.PLOEntryLocalService;
@@ -56,18 +59,24 @@ import com.liferay.portal.security.service.access.policy.service.SAPEntryLocalSe
 import com.liferay.segments.service.SegmentsEntryLocalService;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 import com.liferay.site.configuration.manager.MenuAccessConfigurationManager;
-import com.liferay.site.exception.InitializationException;
+import com.liferay.site.initializer.SiteInitializer;
 import com.liferay.site.navigation.service.SiteNavigationMenuItemLocalService;
 import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 import com.liferay.template.service.TemplateEntryLocalService;
 
+import com.solteq.liferay.site.initializer.audit.service.SIAuditEntryLocalService;
+
+import org.apache.felix.dm.Component;
+import org.apache.felix.dm.DependencyManager;
+import org.apache.felix.dm.ServiceDependency;
 import org.osgi.framework.Bundle;
 
-public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
+public class SolteqSiteInitializerExtension {
 
-    public SolteqBundleSiteInitializer(
+    public SolteqSiteInitializerExtension(
+            SIAuditEntryLocalService siAuditEntryLocalService,
             AccountEntryLocalService accountEntryLocalService,
             AccountEntryOrganizationRelLocalService accountEntryOrganizationRelLocalService,
             AccountGroupLocalService accountGroupLocalService,
@@ -89,6 +98,7 @@ public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
             DDMStructureLocalService ddmStructureLocalService,
             DDMTemplateLocalService ddmTemplateLocalService,
             DefaultDDMStructureHelper defaultDDMStructureHelper,
+            DependencyManager dependencyManager,
             DepotEntryGroupRelLocalService depotEntryGroupRelLocalService,
             DepotEntryLocalService depotEntryLocalService,
             DLFileEntryTypeLocalService dlFileEntryTypeLocalService,
@@ -106,10 +116,10 @@ public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
             KnowledgeBaseFolderResource.Factory knowledgeBaseFolderResourceFactory,
             LayoutLocalService layoutLocalService,
             LayoutPageTemplateEntryLocalService layoutPageTemplateEntryLocalService,
-            LayoutsImporter layoutsImporter,
             LayoutPageTemplateStructureLocalService layoutPageTemplateStructureLocalService,
             LayoutPageTemplateStructureRelLocalService layoutPageTemplateStructureRelLocalService,
             LayoutSetLocalService layoutSetLocalService,
+            LayoutsImporter layoutsImporter,
             LayoutUtilityPageEntryLocalService layoutUtilityPageEntryLocalService,
             ListTypeDefinitionResource listTypeDefinitionResource,
             ListTypeDefinitionResource.Factory listTypeDefinitionResourceFactory,
@@ -138,6 +148,7 @@ public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
             SAPEntryLocalService sapEntryLocalService,
             SegmentsEntryLocalService segmentsEntryLocalService,
             SegmentsExperienceLocalService segmentsExperienceLocalService,
+            ServletContext servletContext,
             Bundle siteBundle,
             Bundle siteInitializerExtenderBundle,
             SiteNavigationMenuItemLocalService siteNavigationMenuItemLocalService,
@@ -155,7 +166,16 @@ public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
             WorkflowDefinitionLinkLocalService workflowDefinitionLinkLocalService,
             WorkflowDefinitionResource.Factory workflowDefinitionResourceFactory,
             ZipWriterFactory zipWriterFactory) {
-        super(
+
+        _log.info("SolteqSiteInitializerExtension - creating new SolteqBundleSiteInitializer for bundle: "
+                + siteBundle.getSymbolicName());
+
+        _dependencyManager = dependencyManager;
+
+        _component = dependencyManager.createComponent();
+
+        SolteqBundleSiteInitializer bundleSiteInitializer = new SolteqBundleSiteInitializer(
+                siAuditEntryLocalService,
                 accountEntryLocalService,
                 accountEntryOrganizationRelLocalService,
                 accountGroupLocalService,
@@ -243,13 +263,39 @@ public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
                 workflowDefinitionLinkLocalService,
                 workflowDefinitionResourceFactory,
                 zipWriterFactory);
+
+        _component.setImplementation(bundleSiteInitializer);
+
+        _component.setInterface(
+                SiteInitializer.class,
+                MapUtil.singletonDictionary("site.initializer.key", siteBundle.getSymbolicName()));
+
+        _log.info("Registered Site Initializer for bundle: " + siteBundle.getSymbolicName());
+
+        if (servletContext == null) {
+            ServiceDependency serviceDependency = _dependencyManager.createServiceDependency();
+
+            serviceDependency.setCallbacks("setServletContext", null);
+            serviceDependency.setRequired(true);
+            serviceDependency.setService(
+                    ServletContext.class, "(osgi.web.symbolicname=" + siteBundle.getSymbolicName() + ")");
+
+            _component.add(serviceDependency);
+        } else {
+            bundleSiteInitializer.setServletContext(servletContext);
+        }
     }
 
-    @Override
-    public void initialize(long groupId) throws InitializationException {
-        _log.info("SolteqBundleSiteInitializer: initializing site for group " + groupId);
-        super.initialize(groupId);
+    public void destroy() {
+        _dependencyManager.remove(_component);
     }
 
-    protected static final Log _log = LogFactoryUtil.getLog(SolteqBundleSiteInitializer.class);
+    public void start() {
+        _dependencyManager.add(_component);
+    }
+
+    private final Component _component;
+    private final DependencyManager _dependencyManager;
+
+    private static final Log _log = LogFactoryUtil.getLog(SolteqSiteInitializerExtension.class);
 }

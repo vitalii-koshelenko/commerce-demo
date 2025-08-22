@@ -1,0 +1,10 @@
+dependencies {
+	api project(":modules:solteq-site-initializer-audit:solteq-site-initializer-audit-api")
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+}
+
+buildService {
+	apiDir = "../solteq-site-initializer-audit-api/src/main/java"
+}
+
+group = "com.solteq.liferay.site.initializer.audit"

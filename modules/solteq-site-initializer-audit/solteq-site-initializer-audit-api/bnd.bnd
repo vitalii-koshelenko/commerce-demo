@@ -1,0 +1,11 @@
+Bundle-Name: Solteq Site Initializer Audit API
+Bundle-SymbolicName: com.solteq.liferay.site.initializer.audit.api
+Bundle-Version: 1.0.0
+Export-Package:\
+	com.solteq.liferay.site.initializer.audit.constants,\
+	com.solteq.liferay.site.initializer.audit.exception,\
+	com.solteq.liferay.site.initializer.audit.model,\
+	com.solteq.liferay.site.initializer.audit.service,\
+	com.solteq.liferay.site.initializer.audit.service.persistence
+-check: EXPORTS
+-includeresource: META-INF/service.xml=../solteq-site-initializer-audit-service/service.xml

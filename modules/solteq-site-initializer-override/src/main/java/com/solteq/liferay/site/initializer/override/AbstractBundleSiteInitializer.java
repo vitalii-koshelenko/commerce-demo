@@ -1,4 +1,4 @@
-package com.solteq.liferay.site.override;
+package com.solteq.liferay.site.initializer.override;
 
 import java.io.InputStream;
 import java.io.Serializable;

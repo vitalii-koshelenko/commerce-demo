@@ -1,4 +1,4 @@
-package com.solteq.liferay.site.override;
+package com.solteq.liferay.site.initializer.override;
 
 import java.io.File;
 import java.util.*;
@@ -71,8 +71,9 @@ import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 import com.liferay.template.service.TemplateEntryLocalService;
 
-import com.solteq.liferay.site.override.util.FileBackedBundleDelegate;
-import com.solteq.liferay.site.override.util.FileBackedServletContextDelegate;
+import com.solteq.liferay.site.initializer.audit.service.SIAuditEntryLocalService;
+import com.solteq.liferay.site.initializer.override.util.FileBackedBundleDelegate;
+import com.solteq.liferay.site.initializer.override.util.FileBackedServletContextDelegate;
 
 import org.apache.felix.dm.DependencyManager;
 import org.osgi.framework.Bundle;
@@ -104,7 +105,8 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
     // ------------------------------- </Components Blacklist> ---------------------------------------------------------
 
     // Reference for component activation
-    @Reference(target = "(component.name=com.solteq.liferay.site.override.SolteqSiteInitializerFactoryImpl)")
+    @Reference(
+            target = "(component.name=com.solteq.liferay.site.initializer.override.SolteqSiteInitializerFactoryImpl)")
     private SiteInitializerFactory siteInitializerFactory;
 
     @Override
@@ -119,6 +121,7 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
         }
 
         SolteqSiteInitializerExtension siteInitializerExtension = new SolteqSiteInitializerExtension(
+                _siAuditEntryLocalService,
                 _accountEntryLocalService,
                 _accountEntryOrganizationRelLocalService,
                 _accountGroupLocalService,
@@ -296,6 +299,7 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
         String symbolicName = "Liferay Site Initializer - File - " + fileKey;
 
         SolteqSiteInitializerExtension siteInitializerExtension = new SolteqSiteInitializerExtension(
+                _siAuditEntryLocalService,
                 _accountEntryLocalService,
                 _accountEntryOrganizationRelLocalService,
                 _accountGroupLocalService,
@@ -398,6 +402,9 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
 
         _fileSiteInitializerExtensions.add(siteInitializerExtension);
     }
+
+    @Reference
+    private SIAuditEntryLocalService _siAuditEntryLocalService;
 
     @Reference
     private AccountEntryLocalService _accountEntryLocalService;

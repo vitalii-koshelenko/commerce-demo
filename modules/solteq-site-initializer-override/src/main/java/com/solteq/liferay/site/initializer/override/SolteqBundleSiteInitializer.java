@@ -1,6 +1,6 @@
-package com.solteq.liferay.site.override;
+package com.solteq.liferay.site.initializer.override;
 
-import javax.servlet.ServletContext;
+import java.util.Set;
 
 import com.liferay.account.service.*;
 import com.liferay.asset.kernel.service.AssetCategoryLocalService;
@@ -45,35 +45,38 @@ import com.liferay.object.admin.rest.resource.v1_0.ObjectFolderResource;
 import com.liferay.object.admin.rest.resource.v1_0.ObjectRelationshipResource;
 import com.liferay.object.rest.manager.v1_0.ObjectEntryManager;
 import com.liferay.object.service.*;
+import com.liferay.petra.string.StringBundler;
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.*;
 import com.liferay.portal.kernel.settings.ArchivedSettingsFactory;
-import com.liferay.portal.kernel.util.MapUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.zip.ZipWriterFactory;
 import com.liferay.portal.language.override.service.PLOEntryLocalService;
 import com.liferay.portal.security.service.access.policy.service.SAPEntryLocalService;
+import com.liferay.portal.servlet.filters.threadlocal.ThreadLocalFilterThreadLocal;
 import com.liferay.segments.service.SegmentsEntryLocalService;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 import com.liferay.site.configuration.manager.MenuAccessConfigurationManager;
-import com.liferay.site.initializer.SiteInitializer;
+import com.liferay.site.exception.InitializationException;
 import com.liferay.site.navigation.service.SiteNavigationMenuItemLocalService;
 import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 import com.liferay.template.service.TemplateEntryLocalService;
 
-import org.apache.felix.dm.Component;
-import org.apache.felix.dm.DependencyManager;
-import org.apache.felix.dm.ServiceDependency;
+import com.solteq.liferay.site.initializer.audit.service.SIAuditEntryLocalService;
+import com.solteq.liferay.site.initializer.override.util.ExceptionUtil;
+
 import org.osgi.framework.Bundle;
 
-public class SolteqSiteInitializerExtension {
+public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
 
-    public SolteqSiteInitializerExtension(
+    public SolteqBundleSiteInitializer(
+            SIAuditEntryLocalService siAuditEntryLocalService,
             AccountEntryLocalService accountEntryLocalService,
             AccountEntryOrganizationRelLocalService accountEntryOrganizationRelLocalService,
             AccountGroupLocalService accountGroupLocalService,
@@ -95,7 +98,6 @@ public class SolteqSiteInitializerExtension {
             DDMStructureLocalService ddmStructureLocalService,
             DDMTemplateLocalService ddmTemplateLocalService,
             DefaultDDMStructureHelper defaultDDMStructureHelper,
-            DependencyManager dependencyManager,
             DepotEntryGroupRelLocalService depotEntryGroupRelLocalService,
             DepotEntryLocalService depotEntryLocalService,
             DLFileEntryTypeLocalService dlFileEntryTypeLocalService,
@@ -113,10 +115,10 @@ public class SolteqSiteInitializerExtension {
             KnowledgeBaseFolderResource.Factory knowledgeBaseFolderResourceFactory,
             LayoutLocalService layoutLocalService,
             LayoutPageTemplateEntryLocalService layoutPageTemplateEntryLocalService,
+            LayoutsImporter layoutsImporter,
             LayoutPageTemplateStructureLocalService layoutPageTemplateStructureLocalService,
             LayoutPageTemplateStructureRelLocalService layoutPageTemplateStructureRelLocalService,
             LayoutSetLocalService layoutSetLocalService,
-            LayoutsImporter layoutsImporter,
             LayoutUtilityPageEntryLocalService layoutUtilityPageEntryLocalService,
             ListTypeDefinitionResource listTypeDefinitionResource,
             ListTypeDefinitionResource.Factory listTypeDefinitionResourceFactory,
@@ -145,7 +147,6 @@ public class SolteqSiteInitializerExtension {
             SAPEntryLocalService sapEntryLocalService,
             SegmentsEntryLocalService segmentsEntryLocalService,
             SegmentsExperienceLocalService segmentsExperienceLocalService,
-            ServletContext servletContext,
             Bundle siteBundle,
             Bundle siteInitializerExtenderBundle,
             SiteNavigationMenuItemLocalService siteNavigationMenuItemLocalService,
@@ -163,15 +164,7 @@ public class SolteqSiteInitializerExtension {
             WorkflowDefinitionLinkLocalService workflowDefinitionLinkLocalService,
             WorkflowDefinitionResource.Factory workflowDefinitionResourceFactory,
             ZipWriterFactory zipWriterFactory) {
-
-        _log.info("SolteqSiteInitializerExtension - creating new SolteqBundleSiteInitializer for bundle: "
-                + siteBundle.getSymbolicName());
-
-        _dependencyManager = dependencyManager;
-
-        _component = dependencyManager.createComponent();
-
-        SolteqBundleSiteInitializer bundleSiteInitializer = new SolteqBundleSiteInitializer(
+        super(
                 accountEntryLocalService,
                 accountEntryOrganizationRelLocalService,
                 accountGroupLocalService,
@@ -259,39 +252,53 @@ public class SolteqSiteInitializerExtension {
                 workflowDefinitionLinkLocalService,
                 workflowDefinitionResourceFactory,
                 zipWriterFactory);
+        this._siAuditEntryLocalService = siAuditEntryLocalService;
+    }
 
-        _component.setImplementation(bundleSiteInitializer);
+    private final SIAuditEntryLocalService _siAuditEntryLocalService;
 
-        _component.setInterface(
-                SiteInitializer.class,
-                MapUtil.singletonDictionary("site.initializer.key", siteBundle.getSymbolicName()));
+    @Override
+    public void initialize(long groupId) throws InitializationException {
+        if (_log.isDebugEnabled()) {
+            _log.debug("Commerce site initializer " + _commerceSiteInitializerSnapshot.get());
+            _log.debug("OSB site initializer " + _osbSiteInitializerSnapshot.get());
+        }
 
-        _log.info("Registered Site Initializer for bundle: " + siteBundle.getSymbolicName());
+        if (ThreadLocalFilterThreadLocal.isFilterInvoked()) {
+            Set<String> initializedGroupIdAndKeys = _initializedGroupIdAndKeys.get();
+            if (!initializedGroupIdAndKeys.add(StringBundler.concat(groupId, StringPool.POUND, getKey()))) {
+                if (_log.isDebugEnabled()) {
+                    _log.debug(StringBundler.concat("Skip already initialized ", getKey(), " for group ", groupId));
+                }
+                return;
+            }
+        }
 
-        if (servletContext == null) {
-            ServiceDependency serviceDependency = _dependencyManager.createServiceDependency();
+        long startTime = System.currentTimeMillis();
 
-            serviceDependency.setCallbacks("setServletContext", null);
-            serviceDependency.setRequired(true);
-            serviceDependency.setService(
-                    ServletContext.class, "(osgi.web.symbolicname=" + siteBundle.getSymbolicName() + ")");
+        if (_log.isInfoEnabled()) {
+            _log.info(StringBundler.concat("Initializing ", getKey(), " for group ", groupId));
+        }
 
-            _component.add(serviceDependency);
-        } else {
-            bundleSiteInitializer.setServletContext(servletContext);
+        try {
+            _initialize(groupId);
+            // Save Audit Entry
+            long processingTime = System.currentTimeMillis() - startTime;
+            String successMessage =
+                    String.format("Initialized '%s' for group '%s' in %d ms", getKey(), groupId, processingTime);
+            _siAuditEntryLocalService.saveSuccessAuditEntry(groupId, getKey(), processingTime, successMessage);
+            _log.info(successMessage);
+        } catch (Exception exception) {
+            // Save Audit Entry
+            long processingTime = System.currentTimeMillis() - startTime;
+            String errorMsg = ExceptionUtil.parseException(exception);
+            _siAuditEntryLocalService.saveFailedAuditEntry(groupId, getKey(), processingTime, errorMsg);
+            _log.error(exception);
+            throw new InitializationException(exception);
+        } finally {
+            ServiceContextThreadLocal.popServiceContext();
         }
     }
 
-    public void destroy() {
-        _dependencyManager.remove(_component);
-    }
-
-    public void start() {
-        _dependencyManager.add(_component);
-    }
-
-    private final Component _component;
-    private final DependencyManager _dependencyManager;
-
-    private static final Log _log = LogFactoryUtil.getLog(SolteqSiteInitializerExtension.class);
+    protected static final Log _log = LogFactoryUtil.getLog(SolteqBundleSiteInitializer.class);
 }

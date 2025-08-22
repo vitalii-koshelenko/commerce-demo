@@ -1,4 +1,7 @@
 dependencies {
 	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+
+    compileOnly project(":modules:solteq-site-initializer-audit:solteq-site-initializer-audit-api")
+
     compileOnly group: "org.apache.felix", name: "org.apache.felix.dependencymanager", version: "4.6.0"
 }

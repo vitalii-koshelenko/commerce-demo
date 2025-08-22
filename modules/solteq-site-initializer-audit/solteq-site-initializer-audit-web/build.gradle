@@ -1,0 +1,4 @@
+dependencies {
+    compileOnly project(":modules:solteq-site-initializer-audit:solteq-site-initializer-audit-api")
+	compileOnly group: "com.liferay.portal", name: "release.dxp.api"
+}
