@@ -1,0 +1,23 @@
+#version: '3.4'
+services:
+  database:
+    container_name: $COMPOSE_PROJECT_NAME-database
+    image: "postgres:16-alpine"
+    environment:
+      - POSTGRES_DB=lportal
+      - POSTGRES_USER=dxpcloud
+      - POSTGRES_PASSWORD=dxpcloud
+    ports:
+      - "5432:5432"
+    volumes:
+      - type: volume
+        source: liferay-commerce-data
+        target: /var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 5s # Check every 5 seconds
+      timeout: 10s  # Wait up to 10 seconds for the command to complete
+      retries: 30 # Retry 30 times before marking as unhealthy
+      start_period: 30s # Give the database 30 seconds to start up initially before health checks count
+volumes:
+  liferay-commerce-data:
