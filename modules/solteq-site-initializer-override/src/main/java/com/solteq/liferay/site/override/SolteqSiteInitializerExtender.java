@@ -64,15 +64,15 @@ import com.liferay.portal.util.PropsValues;
 import com.liferay.segments.service.SegmentsEntryLocalService;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 import com.liferay.site.configuration.manager.MenuAccessConfigurationManager;
+import com.liferay.site.initializer.SiteInitializerFactory;
 import com.liferay.site.navigation.service.SiteNavigationMenuItemLocalService;
 import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 import com.liferay.template.service.TemplateEntryLocalService;
 
-import com.solteq.liferay.site.original.FileBackedBundleDelegate;
-import com.solteq.liferay.site.original.FileBackedServletContextDelegate;
-import com.solteq.liferay.site.original.SiteInitializerExtension;
+import com.solteq.liferay.site.override.util.FileBackedBundleDelegate;
+import com.solteq.liferay.site.override.util.FileBackedServletContextDelegate;
 
 import org.apache.felix.dm.DependencyManager;
 import org.osgi.framework.Bundle;
@@ -103,10 +103,12 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
     private ServiceComponentRuntime serviceComponentRuntime;
     // ------------------------------- </Components Blacklist> ---------------------------------------------------------
 
+    // Reference for component activation
+    @Reference(target = "(component.name=com.solteq.liferay.site.override.SolteqSiteInitializerFactoryImpl)")
+    private SiteInitializerFactory siteInitializerFactory;
+
     @Override
     public SolteqSiteInitializerExtension addingBundle(Bundle bundle, BundleEvent bundleEvent) {
-
-        _log.info("SolteqSiteInitializerExtension, addingBundle: " + bundle.getSymbolicName());
 
         BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
 
@@ -262,14 +264,6 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
 
     @Deactivate
     protected void deactivate() {
-        _bundleTracker.close();
-
-        _files.clear();
-
-        for (SiteInitializerExtension siteInitializerExtension : _fileSiteInitializerExtensions) {
-
-            siteInitializerExtension.destroy();
-        }
 
         _fileSiteInitializerExtensions.clear();
 
@@ -279,6 +273,14 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
             _log.info(String.format("Component '%s' enabled", COMPONENT_NAME));
         } catch (Exception e) {
             _log.error(String.format("Unable to enable component %s, cause:  %s", COMPONENT_NAME, e.getMessage()));
+        }
+
+        _bundleTracker.close();
+
+        _files.clear();
+
+        for (SolteqSiteInitializerExtension siteInitializerExtension : _fileSiteInitializerExtensions) {
+            siteInitializerExtension.destroy();
         }
     }
 
@@ -293,7 +295,7 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
 
         String symbolicName = "Liferay Site Initializer - File - " + fileKey;
 
-        SiteInitializerExtension siteInitializerExtension = new SiteInitializerExtension(
+        SolteqSiteInitializerExtension siteInitializerExtension = new SolteqSiteInitializerExtension(
                 _accountEntryLocalService,
                 _accountEntryOrganizationRelLocalService,
                 _accountGroupLocalService,
@@ -487,7 +489,7 @@ public class SolteqSiteInitializerExtender implements BundleTrackerCustomizer<So
     private ExpandoValueLocalService _expandoValueLocalService;
 
     private final Map<String, File> _files = new HashMap<>();
-    private final List<SiteInitializerExtension> _fileSiteInitializerExtensions = new ArrayList<>();
+    private final List<SolteqSiteInitializerExtension> _fileSiteInitializerExtensions = new ArrayList<>();
 
     @Reference
     private FragmentEntryLinkLocalService _fragmentEntryLinkLocalService;

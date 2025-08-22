@@ -1,14 +1,7 @@
-/**
- * SPDX-FileCopyrightText: (c) 2000 Liferay, Inc. https://liferay.com
- * SPDX-License-Identifier: LGPL-2.1-or-later OR LicenseRef-Liferay-DXP-EULA-2.0.0-2023-06
- */
-package com.solteq.liferay.site.original;
+package com.solteq.liferay.site.override;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Arrays;
 import javax.servlet.ServletContext;
 
 import com.liferay.account.service.*;
@@ -56,210 +49,100 @@ import com.liferay.object.rest.manager.v1_0.ObjectEntryManager;
 import com.liferay.object.service.*;
 import com.liferay.portal.configuration.module.configuration.ConfigurationProvider;
 import com.liferay.portal.kernel.json.JSONFactory;
+import com.liferay.portal.kernel.log.Log;
+import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.service.*;
 import com.liferay.portal.kernel.settings.ArchivedSettingsFactory;
-import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.Portal;
 import com.liferay.portal.kernel.util.ProxyUtil;
 import com.liferay.portal.kernel.util.StringUtil;
 import com.liferay.portal.kernel.zip.ZipWriterFactory;
 import com.liferay.portal.language.override.service.PLOEntryLocalService;
 import com.liferay.portal.security.service.access.policy.service.SAPEntryLocalService;
-import com.liferay.portal.util.PropsValues;
 import com.liferay.segments.service.SegmentsEntryLocalService;
 import com.liferay.segments.service.SegmentsExperienceLocalService;
 import com.liferay.site.configuration.manager.MenuAccessConfigurationManager;
+import com.liferay.site.initializer.SiteInitializer;
+import com.liferay.site.initializer.SiteInitializerFactory;
 import com.liferay.site.navigation.service.SiteNavigationMenuItemLocalService;
 import com.liferay.site.navigation.service.SiteNavigationMenuLocalService;
 import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 import com.liferay.template.service.TemplateEntryLocalService;
 
-import org.apache.felix.dm.DependencyManager;
+import com.solteq.liferay.site.override.util.FileBackedBundleDelegate;
+import com.solteq.liferay.site.override.util.FileBackedServletContextDelegate;
+
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleEvent;
-import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleWiring;
 import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.util.tracker.BundleTracker;
-import org.osgi.util.tracker.BundleTrackerCustomizer;
+import org.osgi.service.component.runtime.ServiceComponentRuntime;
+import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 
-/**
- * @author Brian Wing Shun Chan
- */
-// @Component(service = SiteInitializerExtender.class)
-public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInitializerExtension> {
+@Component(service = SiteInitializerFactory.class)
+public class SolteqSiteInitializerFactoryImpl implements SiteInitializerFactory {
 
-    @Override
-    public SiteInitializerExtension addingBundle(Bundle bundle, BundleEvent bundleEvent) {
+    // ------------------------------- <Components Blacklist> ----------------------------------------------------------
+    private ComponentDescriptionDTO componentDescriptionDTO;
 
-        BundleWiring bundleWiring = bundle.adapt(BundleWiring.class);
-
-        List<BundleCapability> bundleCapabilities = bundleWiring.getCapabilities("liferay.site.initializer");
-
-        if (ListUtil.isEmpty(bundleCapabilities)) {
-            return null;
-        }
-
-        SiteInitializerExtension siteInitializerExtension = new SiteInitializerExtension(
-                _accountEntryLocalService,
-                _accountEntryOrganizationRelLocalService,
-                _accountGroupLocalService,
-                _accountGroupRelService,
-                _accountResourceFactory,
-                _accountRoleLocalService,
-                _accountRoleResourceFactory,
-                _archivedSettingsFactory,
-                _assetCategoryLocalService,
-                _assetEntryLocalService,
-                _assetLinkLocalService,
-                _assetListEntryLocalService,
-                _blogPostingResourceFactory,
-                _cetManager,
-                _clientExtensionEntryLocalService,
-                _companyLocalService,
-                _configurationProvider,
-                _dataDefinitionResourceFactory,
-                _ddmStructureLocalService,
-                _ddmTemplateLocalService,
-                _defaultDDMStructureHelper,
-                _dependencyManager,
-                _depotEntryGroupRelLocalService,
-                _depotEntryLocalService,
-                _dlFileEntryTypeLocalService,
-                _dlURLHelper,
-                _documentFolderResourceFactory,
-                _documentResourceFactory,
-                _expandoValueLocalService,
-                _fragmentEntryLinkLocalService,
-                _fragmentsImporter,
-                _groupLocalService,
-                _journalArticleLocalService,
-                _jsonFactory,
-                _keywordResourceFactory,
-                _knowledgeBaseArticleResourceFactory,
-                _knowledgeBaseFolderResourceFactory,
-                _layoutLocalService,
-                _layoutPageTemplateEntryLocalService,
-                _layoutPageTemplateStructureLocalService,
-                _layoutPageTemplateStructureRelLocalService,
-                _layoutSetLocalService,
-                _layoutsImporter,
-                _layoutUtilityPageEntryLocalService,
-                _listTypeDefinitionResource,
-                _listTypeDefinitionResourceFactory,
-                _listTypeEntryLocalService,
-                _listTypeEntryResource,
-                _listTypeEntryResourceFactory,
-                _menuAccessConfigurationManager,
-                _notificationTemplateResourceFactory,
-                _objectActionLocalService,
-                _objectDefinitionLocalService,
-                _objectDefinitionResourceFactory,
-                _objectEntryLocalService,
-                _objectEntryManager,
-                _objectFieldLocalService,
-                _objectFieldResourceFactory,
-                _objectFolderResourceFactory,
-                _objectRelationshipLocalService,
-                _objectRelationshipResourceFactory,
-                _organizationLocalService,
-                _organizationResourceFactory,
-                _ploEntryLocalService,
-                _portal,
-                _resourceActionLocalService,
-                _resourcePermissionLocalService,
-                _roleLocalService,
-                _sapEntryLocalService,
-                _segmentsEntryLocalService,
-                _segmentsExperienceLocalService,
-                null,
-                bundle,
-                _bundleContext.getBundle(),
-                _siteNavigationMenuItemLocalService,
-                _siteNavigationMenuItemTypeRegistry,
-                _siteNavigationMenuLocalService,
-                _structuredContentFolderResourceFactory,
-                _styleBookEntryZipProcessor,
-                _taxonomyCategoryResourceFactory,
-                _taxonomyVocabularyResourceFactory,
-                _templateEntryLocalService,
-                _themeLocalService,
-                _userAccountResourceFactory,
-                _userGroupLocalService,
-                _userLocalService,
-                _workflowDefinitionLinkLocalService,
-                _workflowDefinitionResourceFactory,
-                _zipWriterFactory);
-
-        siteInitializerExtension.start();
-
-        return siteInitializerExtension;
-    }
-
-    public File getFile(String fileKey) {
-        return _files.get(fileKey);
-    }
-
-    @Override
-    public void modifiedBundle(
-            Bundle bundle, BundleEvent bundleEvent, SiteInitializerExtension siteInitializerExtension) {}
-
-    @Override
-    public void removedBundle(
-            Bundle bundle, BundleEvent bundleEvent, SiteInitializerExtension siteInitializerExtension) {
-
-        siteInitializerExtension.destroy();
-    }
+    public static final String BUNDLE_NAME = "com.liferay.site.initializer.extender";
+    public static final String COMPONENT_NAME =
+            "com.liferay.site.initializer.extender.internal.SiteInitializerFactoryImpl";
 
     @Activate
-    protected void activate(BundleContext bundleContext) throws Exception {
+    public void activate(BundleContext bundleContext) {
         _bundleContext = bundleContext;
-
-        _dependencyManager = new DependencyManager(bundleContext);
-
-        _bundleTracker = new BundleTracker<>(bundleContext, Bundle.ACTIVE, this);
-
-        _bundleTracker.open();
-
-        File siteInitializersDirectoryFile = new File(PropsValues.LIFERAY_HOME, "site-initializers");
-
-        if (siteInitializersDirectoryFile.isDirectory()) {
-            for (File file : siteInitializersDirectoryFile.listFiles()) {
-                _addFile(file);
-            }
+        // Disable the original FileBackedThumbnailServlet when registering a custom one
+        try {
+            Bundle[] bundles = bundleContext.getBundles();
+            Bundle targetBundle = Arrays.stream(bundles)
+                    .filter(bnd -> BUNDLE_NAME.equals(bnd.getSymbolicName()))
+                    .findFirst()
+                    .orElse(null);
+            componentDescriptionDTO = serviceComponentRuntime.getComponentDescriptionDTO(targetBundle, COMPONENT_NAME);
+            serviceComponentRuntime.disableComponent(componentDescriptionDTO);
+            _log.info(String.format("Component '%s' disabled", COMPONENT_NAME));
+        } catch (Exception e) {
+            _log.error(String.format("Unable to disable component %s, cause:  %s", COMPONENT_NAME, e.getMessage()));
         }
     }
 
     @Deactivate
-    protected void deactivate() {
-        _bundleTracker.close();
-
-        _files.clear();
-
-        for (SiteInitializerExtension siteInitializerExtension : _fileSiteInitializerExtensions) {
-
-            siteInitializerExtension.destroy();
+    public void deactivate(BundleContext bundleContext) {
+        // Enable the original FileBackedThumbnailServlet when unregistering a custom one
+        try {
+            serviceComponentRuntime.enableComponent(componentDescriptionDTO);
+            _log.info(String.format("Component '%s' enabled", COMPONENT_NAME));
+        } catch (Exception e) {
+            _log.error(String.format("Unable to enable component %s, cause:  %s", COMPONENT_NAME, e.getMessage()));
         }
-
-        _fileSiteInitializerExtensions.clear();
     }
 
-    private void _addFile(File file) throws Exception {
-        if (!file.isDirectory()) {
-            return;
-        }
+    @Reference
+    private ServiceComponentRuntime serviceComponentRuntime;
+    // ------------------------------- </Components Blacklist> ---------------------------------------------------------
+
+    @Override
+    public SiteInitializer create(File file, String symbolicName) throws Exception {
+
+        _log.info("SolteqSiteInitializerFactoryImpl: creating site initializer for bundle: " + symbolicName);
 
         String fileKey = StringUtil.randomString(16);
 
-        _files.put(fileKey, file);
+        if (symbolicName == null) {
+            symbolicName = "Liferay Site Initializer - File - " + fileKey;
+        }
 
-        String symbolicName = "Liferay Site Initializer - File - " + fileKey;
+        Bundle siteBundle = ProxyUtil.newDelegateProxyInstance(
+                Bundle.class.getClassLoader(),
+                Bundle.class,
+                new FileBackedBundleDelegate(_bundleContext, file, _jsonFactory, symbolicName),
+                null);
 
-        SiteInitializerExtension siteInitializerExtension = new SiteInitializerExtension(
+        SolteqBundleSiteInitializer bundleSiteInitializer = new SolteqBundleSiteInitializer(
                 _accountEntryLocalService,
                 _accountEntryOrganizationRelLocalService,
                 _accountGroupLocalService,
@@ -281,7 +164,6 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
                 _ddmStructureLocalService,
                 _ddmTemplateLocalService,
                 _defaultDDMStructureHelper,
-                _dependencyManager,
                 _depotEntryGroupRelLocalService,
                 _depotEntryLocalService,
                 _dlFileEntryTypeLocalService,
@@ -299,10 +181,10 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
                 _knowledgeBaseFolderResourceFactory,
                 _layoutLocalService,
                 _layoutPageTemplateEntryLocalService,
+                _layoutsImporter,
                 _layoutPageTemplateStructureLocalService,
                 _layoutPageTemplateStructureRelLocalService,
                 _layoutSetLocalService,
-                _layoutsImporter,
                 _layoutUtilityPageEntryLocalService,
                 _listTypeDefinitionResource,
                 _listTypeDefinitionResourceFactory,
@@ -318,7 +200,7 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
                 _objectEntryManager,
                 _objectFieldLocalService,
                 _objectFieldResourceFactory,
-                _objectFolderResourceFactory,
+                _objectfolderResourceFactory,
                 _objectRelationshipLocalService,
                 _objectRelationshipResourceFactory,
                 _organizationLocalService,
@@ -331,16 +213,7 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
                 _sapEntryLocalService,
                 _segmentsEntryLocalService,
                 _segmentsExperienceLocalService,
-                ProxyUtil.newDelegateProxyInstance(
-                        ServletContext.class.getClassLoader(),
-                        ServletContext.class,
-                        new FileBackedServletContextDelegate(file, fileKey, symbolicName),
-                        null),
-                ProxyUtil.newDelegateProxyInstance(
-                        Bundle.class.getClassLoader(),
-                        Bundle.class,
-                        new FileBackedBundleDelegate(_bundleContext, file, _jsonFactory, symbolicName),
-                        null),
+                siteBundle,
                 _bundleContext.getBundle(),
                 _siteNavigationMenuItemLocalService,
                 _siteNavigationMenuItemTypeRegistry,
@@ -358,9 +231,13 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
                 _workflowDefinitionResourceFactory,
                 _zipWriterFactory);
 
-        siteInitializerExtension.start();
+        bundleSiteInitializer.setServletContext(ProxyUtil.newDelegateProxyInstance(
+                ServletContext.class.getClassLoader(),
+                ServletContext.class,
+                new FileBackedServletContextDelegate(file, fileKey, symbolicName),
+                null));
 
-        _fileSiteInitializerExtensions.add(siteInitializerExtension);
+        return bundleSiteInitializer;
     }
 
     @Reference
@@ -403,7 +280,6 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
     private BlogPostingResource.Factory _blogPostingResourceFactory;
 
     private BundleContext _bundleContext;
-    private BundleTracker<?> _bundleTracker;
 
     @Reference
     private CETManager _cetManager;
@@ -429,8 +305,6 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
     @Reference
     private DefaultDDMStructureHelper _defaultDDMStructureHelper;
 
-    private DependencyManager _dependencyManager;
-
     @Reference
     private DepotEntryGroupRelLocalService _depotEntryGroupRelLocalService;
 
@@ -451,9 +325,6 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
 
     @Reference
     private ExpandoValueLocalService _expandoValueLocalService;
-
-    private final Map<String, File> _files = new HashMap<>();
-    private final List<SiteInitializerExtension> _fileSiteInitializerExtensions = new ArrayList<>();
 
     @Reference
     private FragmentEntryLinkLocalService _fragmentEntryLinkLocalService;
@@ -543,7 +414,7 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
     private ObjectFieldResource.Factory _objectFieldResourceFactory;
 
     @Reference
-    private ObjectFolderResource.Factory _objectFolderResourceFactory;
+    private ObjectFolderResource.Factory _objectfolderResourceFactory;
 
     @Reference
     private ObjectRelationshipLocalService _objectRelationshipLocalService;
@@ -625,4 +496,6 @@ public class SiteInitializerExtender implements BundleTrackerCustomizer<SiteInit
 
     @Reference
     private ZipWriterFactory _zipWriterFactory;
+
+    private static final Log _log = LogFactoryUtil.getLog(SolteqSiteInitializerFactoryImpl.class);
 }
