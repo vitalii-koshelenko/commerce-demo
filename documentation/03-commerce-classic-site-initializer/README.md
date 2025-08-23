@@ -12,29 +12,13 @@ _**Note**: this feature is behind a beta feature flag (LPD-20379), and should be
 
 ![01-feature-flag.png](images/01-feature-flag.png)
 
-## Pages Structure
-
-A Liferay Commerce site created from Commerce Classic Site Initializer has the following pages structure:
-
-- Catalog
-  - Compare
-  - Product Detail
-- Orders
-  - Pending Orders
-    - Checkout
-  - Placed Orders
-- Returns
-- Account Management
-- Lists
-- Search
-
-## Master Page Overview
+## Master Page
 
 The Master Page Commerce Classic Overview has the following structure:
 
 ![02-master-page.png](images/02-master-page.png)
 
-### Header
+#### Header
 - #### Commerce Header User Fragment
     Displays the user profile menu, language and currency selectors.
     [Source Link](https://github.com/liferay/liferay-portal/tree/master/modules/apps/commerce/commerce-site-initializer/commerce-site-initializer/src/main/resources/site-initializer/fragments/group/commerce/fragments/header-user)
@@ -43,26 +27,26 @@ The Master Page Commerce Classic Overview has the following structure:
 - #### Commerce Components Group Fragment
     Displays account selector and mini-cart. 
     [Source Link](https://github.com/liferay/liferay-portal/tree/master/modules/apps/commerce/commerce-site-initializer/commerce-site-initializer/src/main/resources/site-initializer/fragments/group/commerce/fragments/commerce-components-group)
-### DropZone
-### Footer
+#### DropZone
+#### Footer
 Displays footer menu and social media links.
 
-## Display Page Template Overview
+## Display Page Template
 
 The Order Display Page Template has the following structure:
 ![03-order-dpt.png](images/03-order-dpt.png)
 
 ### Order Header
 
-##### UI
+**UI**
 
 ![04-order-header.png](images/04-order-header.png)
 
-##### Description
+**Description**
 
 Contains Order and Workflow status, Order name (customizable) and ERC, Checkout link and actions 
 
-##### Components 
+**Components** 
 
 Fragments rendered with FragmentRenderer, available only with LPD-20379 feature flag:
 - [Order Status Label](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-order-content-web/src/main/java/com/liferay/commerce/order/content/web/internal/fragment/renderer/StatusLabelFragmentRenderer.java)
@@ -71,71 +55,112 @@ Fragments rendered with FragmentRenderer, available only with LPD-20379 feature 
 
 ### Order Tabs
 
-##### UI
+**UI**
 
 ![05-order-tabs.png](images/05-order-tabs.png)
 
-##### Description
+**Description**
 
 Tabs navigation between Order Details, Returns and Shipments
 
-##### Components
+**Components**
 
 Tabs fragment with DropZones.
 
 ### Order Steps
 
-##### UI
+**UI**
 
 ![06-order-steps.png](images/06-order-steps.png)
 
-##### Description
+**Description**
 
 Displays progress on order steps.
 
-##### Components
+**Components**
 
 Fragment rendered with FragmentRenderer, available only with LPD-20379 feature flag:
 - [Placed Order Shipments Data Set](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-order-content-web/src/main/java/com/liferay/commerce/order/content/web/internal/fragment/renderer/PlacedOrderShipmentsDataSetFragmentRenderer.java)
 
 ### Order Details
 
-##### UI
+**UI**
 
 ![07-order-details.png](images/07-order-details.png)
 
-##### Description
+**Description**
 
 Displays order details: account and order information, shipping and billing addresses, payment method, etc.
 
-##### Components
+**Components**
 
 A Grid with [Info Box](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-order-content-web/src/main/java/com/liferay/commerce/order/content/web/internal/fragment/renderer/InfoBoxFragmentRenderer.java) fragments.
 
 ### Order Items
 
-##### UI
+**UI**
 
 ![08-order-items.png](images/08-order-items.png)
 
-##### Description
+**Description**
 
 Displays information about order items.
 
-##### Components
+**Components**
 
 [Order Items Data Set](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-order-content-web/src/main/java/com/liferay/commerce/order/content/web/internal/fragment/renderer/OrderItemsDataSetFragmentRenderer.java)
 
 ### Order Items
 
-##### UI
+**UI**
 
 ![09-order-summary.png](images/09-order-summary.png)
 
-##### Description
+**Description**
 
 Displays order summary information.
 
-##### Components
+**Components**
 
 A Grid with [Order Summary](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-order-content-web/src/main/java/com/liferay/commerce/order/content/web/internal/fragment/renderer/OrderSummaryFragmentRenderer.java) fragments.
+
+## Pages Structure
+
+A Liferay Commerce site created from Commerce Classic Site Initializer has the following pages structure:
+
+- Catalog
+    - Compare
+    - Product Detail
+- Orders
+    - Pending Orders
+        - Checkout
+    - Placed Orders
+- Returns
+- Account Management
+- Lists
+- Search
+
+#### Catalog Page
+
+The Catalog page contains the product list and search/filtering options:
+
+![10-product-list.png](images/10-product-list.png)
+
+Standard commerce widgets are used on the catalog page.
+
+#### Compare Page
+
+The Compare page displays product comparison after selecting two or more products on the catalog page:
+
+![11-compare-products.png](images/11-compare-products.png)
+
+The [Product Comparison Table](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-product-content-web/src/main/java/com/liferay/commerce/product/content/web/internal/portlet/CPCompareContentPortlet.java) widget is used on this page.
+
+
+#### Product Detail Page
+
+The Product Detail displays detailed information about the selected product:
+
+![12-product-detail.png](images/12-product-detail.png)
+
+The [Product Details](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-product-content-web/src/main/java/com/liferay/commerce/product/content/web/internal/portlet/CPContentPortlet.java) widget is used on this page.

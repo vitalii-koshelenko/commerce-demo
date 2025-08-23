@@ -7,8 +7,8 @@ package com.solteq.liferay.site.initializer.audit.service.impl;
 import java.util.List;
 
 import com.liferay.portal.aop.AopService;
-
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+
 import com.solteq.liferay.site.initializer.audit.constants.SIAuditStatus;
 import com.solteq.liferay.site.initializer.audit.model.SIAuditEntry;
 import com.solteq.liferay.site.initializer.audit.service.base.SIAuditEntryLocalServiceBaseImpl;
