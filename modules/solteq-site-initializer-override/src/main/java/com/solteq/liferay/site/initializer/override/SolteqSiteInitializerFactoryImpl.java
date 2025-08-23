@@ -1,7 +1,6 @@
 package com.solteq.liferay.site.initializer.override;
 
 import java.io.File;
-import java.util.Arrays;
 import javax.servlet.ServletContext;
 
 import com.liferay.account.service.*;
@@ -78,53 +77,15 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.runtime.ServiceComponentRuntime;
-import org.osgi.service.component.runtime.dto.ComponentDescriptionDTO;
 
 @Component(service = SiteInitializerFactory.class)
 public class SolteqSiteInitializerFactoryImpl implements SiteInitializerFactory {
 
-    // ------------------------------- <Components Blacklist> ----------------------------------------------------------
-    private ComponentDescriptionDTO componentDescriptionDTO;
-
-    public static final String BUNDLE_NAME = "com.liferay.site.initializer.extender";
-    public static final String COMPONENT_NAME =
-            "com.liferay.site.initializer.extender.internal.SiteInitializerFactoryImpl";
-
     @Activate
     public void activate(BundleContext bundleContext) {
         _bundleContext = bundleContext;
-        // Disable the original FileBackedThumbnailServlet when registering a custom one
-        try {
-            Bundle[] bundles = bundleContext.getBundles();
-            Bundle targetBundle = Arrays.stream(bundles)
-                    .filter(bnd -> BUNDLE_NAME.equals(bnd.getSymbolicName()))
-                    .findFirst()
-                    .orElse(null);
-            componentDescriptionDTO = serviceComponentRuntime.getComponentDescriptionDTO(targetBundle, COMPONENT_NAME);
-            serviceComponentRuntime.disableComponent(componentDescriptionDTO);
-            _log.info(String.format("Component '%s' disabled", COMPONENT_NAME));
-        } catch (Exception e) {
-            _log.error(String.format("Unable to disable component %s, cause:  %s", COMPONENT_NAME, e.getMessage()));
-        }
     }
-
-    @Deactivate
-    public void deactivate(BundleContext bundleContext) {
-        // Enable the original FileBackedThumbnailServlet when unregistering a custom one
-        try {
-            serviceComponentRuntime.enableComponent(componentDescriptionDTO);
-            _log.info(String.format("Component '%s' enabled", COMPONENT_NAME));
-        } catch (Exception e) {
-            _log.error(String.format("Unable to enable component %s, cause:  %s", COMPONENT_NAME, e.getMessage()));
-        }
-    }
-
-    @Reference
-    private ServiceComponentRuntime serviceComponentRuntime;
-    // ------------------------------- </Components Blacklist> ---------------------------------------------------------
 
     @Override
     public SiteInitializer create(File file, String symbolicName) throws Exception {

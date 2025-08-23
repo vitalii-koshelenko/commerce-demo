@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.liferay.portal.aop.AopService;
 
+import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
 import com.solteq.liferay.site.initializer.audit.constants.SIAuditStatus;
 import com.solteq.liferay.site.initializer.audit.model.SIAuditEntry;
 import com.solteq.liferay.site.initializer.audit.service.base.SIAuditEntryLocalServiceBaseImpl;
@@ -36,6 +37,7 @@ public class SIAuditEntryLocalServiceImpl extends SIAuditEntryLocalServiceBaseIm
         siAuditEntry.setProcessingTime(processingTime);
         siAuditEntry.setStatus(SIAuditStatus.SUCCESS);
         siAuditEntry.setMessage(message);
+        siAuditEntry.setUserId(PrincipalThreadLocal.getUserId());
         return updateSIAuditEntry(siAuditEntry);
     }
 
@@ -48,6 +50,7 @@ public class SIAuditEntryLocalServiceImpl extends SIAuditEntryLocalServiceBaseIm
         siAuditEntry.setProcessingTime(processingTime);
         siAuditEntry.setStatus(SIAuditStatus.FAILED);
         siAuditEntry.setMessage(message);
+        siAuditEntry.setUserId(PrincipalThreadLocal.getUserId());
         return updateSIAuditEntry(siAuditEntry);
     }
 }
