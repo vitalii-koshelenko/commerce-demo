@@ -9,4 +9,6 @@ public class SIAuditPortletKeys {
     public static final String PORTLET_ID = "com_solteq_liferay_site_initializer_audit_web_portlet_SIAuditPortlet";
     public static final String MVC_COMMAND_DEFAULT = "/";
     public static final String VIEW_JSP = "/si-audit/view.jsp";
+
+    public static final String CSS_CLASS_WRAPPER = "si-audit-wrapper";
 }

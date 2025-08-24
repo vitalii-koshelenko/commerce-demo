@@ -243,8 +243,10 @@ public interface SIAuditEntryLocalService extends BaseLocalService, PersistedMod
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<SIAuditEntry> getSiteAuditEntries(long groupId);
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SIAuditEntry saveFailedAuditEntry(long groupId, String siKey, long processingTime, String message);
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SIAuditEntry saveSuccessAuditEntry(long groupId, String siKey, long processingTime, String message);
 
     /**

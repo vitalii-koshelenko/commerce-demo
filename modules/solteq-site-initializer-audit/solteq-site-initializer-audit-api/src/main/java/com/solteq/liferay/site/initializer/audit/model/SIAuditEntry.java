@@ -53,4 +53,6 @@ public interface SIAuditEntry extends PersistedModel, SIAuditEntryModel {
     public String getProcesingTimeLabel();
 
     public String getStatusLabel();
+
+    public String getDisplayType();
 }

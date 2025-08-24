@@ -126,6 +126,11 @@ public class SIAuditEntryWrapper extends BaseModelWrapper<SIAuditEntry>
         return model.getCreateDate();
     }
 
+    @Override
+    public String getDisplayType() {
+        return model.getDisplayType();
+    }
+
     /**
      * Returns the group ID of this si audit entry.
      *

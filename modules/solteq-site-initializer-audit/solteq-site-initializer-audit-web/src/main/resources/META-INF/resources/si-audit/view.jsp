@@ -14,12 +14,18 @@
                 <liferay-ui:search-container-row className="com.solteq.liferay.site.initializer.audit.model.SIAuditEntry"
                                                  modelVar="siAuditEntry" keyProperty="siAuditEntryId">
                     <liferay-ui:search-container-column-text name="si-audit-entry.id" value="${siAuditEntry.siAuditEntryId}" />
-                    <liferay-ui:search-container-column-text name="si-audit-entry.sync-date" value="${siAuditEntry.syncDateFormatted}" />
+                    <liferay-ui:search-container-column-text name="si-audit-entry.sync-date" value="${siAuditEntry.syncDateFormatted}"
+                                                             cssClass="si-col-md" />
                     <liferay-ui:search-container-column-text name="si-audit-entry.site-name" value="${siAuditEntry.siteName}" />
                     <liferay-ui:search-container-column-text name="si-audit-entry.si-key" value="${siAuditEntry.siKey}" />
-                    <liferay-ui:search-container-column-text name="si-audit-entry.user" value="${siAuditEntry.user}" />
+                    <liferay-ui:search-container-column-text name="si-audit-entry.user" value="${siAuditEntry.user}"
+                                                             cssClass="si-col-md" />
                     <liferay-ui:search-container-column-text name="si-audit-entry.processing-time" value="${siAuditEntry.procesingTimeLabel}" />
-                    <liferay-ui:search-container-column-text name="si-audit-entry.status" value="${siAuditEntry.statusLabel}" translate="true" />
+                    <liferay-ui:search-container-column-text name="si-audit-entry.status">
+                        <clay:badge label="${siAuditEntry.statusLabel}" cssClass="si-audit-badge"
+                                    displayType="${siAuditEntry.displayType}"
+                        />
+                    </liferay-ui:search-container-column-text>
                     <liferay-ui:search-container-column-text name="si-audit-entry.message" value="${siAuditEntry.message}" />
                 </liferay-ui:search-container-row>
                 <liferay-ui:search-iterator markupView="lexicon" />

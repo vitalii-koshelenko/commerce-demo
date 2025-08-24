@@ -22,6 +22,7 @@ import org.osgi.service.component.annotations.Component;
             "javax.portlet.security-role-ref=administrator",
             "com.liferay.portlet.header-portlet-css=/si-audit/css/main.css",
             "com.liferay.portlet.header-portlet-javascript=/si-audit/js/main.js",
+            "com.liferay.portlet.css-class-wrapper=" + SIAuditPortletKeys.CSS_CLASS_WRAPPER,
             "javax.portlet.version=3.0"
         },
         service = {Portlet.class})

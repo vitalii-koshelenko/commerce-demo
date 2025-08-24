@@ -9,10 +9,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.liferay.petra.string.StringPool;
+import com.liferay.portal.kernel.language.LanguageUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.GroupLocalServiceUtil;
 import com.liferay.portal.kernel.service.UserLocalServiceUtil;
+import com.liferay.portal.kernel.util.LocaleThreadLocal;
 
 import com.solteq.liferay.site.initializer.audit.constants.SIAuditStatus;
 
@@ -21,7 +23,7 @@ import com.solteq.liferay.site.initializer.audit.constants.SIAuditStatus;
  */
 public class SIAuditEntryImpl extends SIAuditEntryBaseImpl {
 
-    private static final String DATE_FORMAT = "MM-ddd-yyyy HH:mm";
+    private static final String DATE_FORMAT = "dd-MMM-yyyy HH:mm";
 
     @Override
     public String getSyncDateFormatted() {
@@ -56,6 +58,12 @@ public class SIAuditEntryImpl extends SIAuditEntryBaseImpl {
 
     @Override
     public String getStatusLabel() {
-        return getStatus() == SIAuditStatus.SUCCESS ? "status-success" : "status-failed";
+        String labelKey = getStatus() == SIAuditStatus.SUCCESS ? "status-success" : "status-failed";
+        return LanguageUtil.get(LocaleThreadLocal.getThemeDisplayLocale(), labelKey);
+    }
+
+    @Override
+    public String getDisplayType() {
+        return getStatus() == SIAuditStatus.SUCCESS ? "info" : "warning";
     }
 }
