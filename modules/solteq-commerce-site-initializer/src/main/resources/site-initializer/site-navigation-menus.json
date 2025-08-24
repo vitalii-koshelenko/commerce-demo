@@ -4,11 +4,13 @@
 		"menuItems": [
 			{
 				"friendlyURL": "/catalog",
+                "externalReferenceCode": "COMMERCE_MENU_ITEM_CATALOG",
 				"privateLayout": false,
 				"type": "layout"
 			},
 			{
 				"friendlyURL": "/returns",
+                "externalReferenceCode": "COMMERCE_MENU_ITEM_RETURNS",
 				"privateLayout": false,
 				"type": "layout"
 			},
@@ -16,6 +18,7 @@
 				"menuItems": [
 					{
 						"friendlyURL": "/pending-orders",
+                        "externalReferenceCode": "COMMERCE_MENU_ITEM_PENDING_ORDERS",
 						"name_i18n": {
 							"en_US": "Pending Orders"
 						},
@@ -24,6 +27,7 @@
 					},
 					{
 						"friendlyURL": "/placed-orders",
+                        "externalReferenceCode": "COMMERCE_MENU_ITEM_PLACED_ORDERS",
 						"name_i18n": {
 							"en_US": "Placed Orders"
 						},
@@ -31,6 +35,7 @@
 						"type": "layout"
 					}
 				],
+                "externalReferenceCode": "COMMERCE_MENU_ITEM_ORDERS",
 				"name_i18n": {
 					"en_US": "Orders"
 				},
@@ -40,15 +45,18 @@
 			},
 			{
 				"friendlyURL": "/returns",
+                "externalReferenceCode": "COMMERCE_MENU_ITEM_RETURNS",
 				"privateLayout": false,
 				"type": "layout"
 			},
 			{
 				"friendlyURL": "/account-management",
+                "externalReferenceCode": "COMMERCE_MENU_ITEM_ACCOUNT_MANAGEMENT",
 				"privateLayout": false,
 				"type": "layout"
 			}
 		],
-		"name": "Commerce Classic Primary Navigation"
+		"name": "Commerce Classic Primary Navigation",
+        "externalReferenceCode": "COMMERCE_CLASSIC_PRIMARY_NAVIGATION"
 	}
 ]
