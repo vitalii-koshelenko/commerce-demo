@@ -35,7 +35,6 @@ public class SIAuditEntryWrapper extends BaseModelWrapper<SIAuditEntry>
         attributes.put("groupId", getGroupId());
         attributes.put("companyId", getCompanyId());
         attributes.put("userId", getUserId());
-        attributes.put("userName", getUserName());
         attributes.put("createDate", getCreateDate());
         attributes.put("siKey", getSiKey());
         attributes.put("processingTime", getProcessingTime());
@@ -69,12 +68,6 @@ public class SIAuditEntryWrapper extends BaseModelWrapper<SIAuditEntry>
 
         if (userId != null) {
             setUserId(userId);
-        }
-
-        String userName = (String) attributes.get("userName");
-
-        if (userName != null) {
-            setUserName(userName);
         }
 
         Date createDate = (Date) attributes.get("createDate");
@@ -163,6 +156,11 @@ public class SIAuditEntryWrapper extends BaseModelWrapper<SIAuditEntry>
         return model.getPrimaryKey();
     }
 
+    @Override
+    public String getProcesingTimeLabel() {
+        return model.getProcesingTimeLabel();
+    }
+
     /**
      * Returns the processing time of this si audit entry.
      *
@@ -193,6 +191,11 @@ public class SIAuditEntryWrapper extends BaseModelWrapper<SIAuditEntry>
         return model.getSiKey();
     }
 
+    @Override
+    public String getSiteName() {
+        return model.getSiteName();
+    }
+
     /**
      * Returns the status of this si audit entry.
      *
@@ -203,6 +206,21 @@ public class SIAuditEntryWrapper extends BaseModelWrapper<SIAuditEntry>
         return model.getStatus();
     }
 
+    @Override
+    public String getStatusLabel() {
+        return model.getStatusLabel();
+    }
+
+    @Override
+    public String getSyncDateFormatted() {
+        return model.getSyncDateFormatted();
+    }
+
+    @Override
+    public String getUser() {
+        return model.getUser();
+    }
+
     /**
      * Returns the user ID of this si audit entry.
      *
@@ -211,16 +229,6 @@ public class SIAuditEntryWrapper extends BaseModelWrapper<SIAuditEntry>
     @Override
     public long getUserId() {
         return model.getUserId();
-    }
-
-    /**
-     * Returns the user name of this si audit entry.
-     *
-     * @return the user name of this si audit entry
-     */
-    @Override
-    public String getUserName() {
-        return model.getUserName();
     }
 
     /**
@@ -336,16 +344,6 @@ public class SIAuditEntryWrapper extends BaseModelWrapper<SIAuditEntry>
     @Override
     public void setUserId(long userId) {
         model.setUserId(userId);
-    }
-
-    /**
-     * Sets the user name of this si audit entry.
-     *
-     * @param userName the user name of this si audit entry
-     */
-    @Override
-    public void setUserName(String userName) {
-        model.setUserName(userName);
     }
 
     /**

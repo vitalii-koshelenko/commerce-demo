@@ -50,7 +50,7 @@ public class SIAuditEntryCacheModel implements CacheModel<SIAuditEntry>, Externa
 
     @Override
     public String toString() {
-        StringBundler sb = new StringBundler(21);
+        StringBundler sb = new StringBundler(19);
 
         sb.append("{siAuditEntryId=");
         sb.append(siAuditEntryId);
@@ -60,8 +60,6 @@ public class SIAuditEntryCacheModel implements CacheModel<SIAuditEntry>, Externa
         sb.append(companyId);
         sb.append(", userId=");
         sb.append(userId);
-        sb.append(", userName=");
-        sb.append(userName);
         sb.append(", createDate=");
         sb.append(createDate);
         sb.append(", siKey=");
@@ -85,12 +83,6 @@ public class SIAuditEntryCacheModel implements CacheModel<SIAuditEntry>, Externa
         siAuditEntryImpl.setGroupId(groupId);
         siAuditEntryImpl.setCompanyId(companyId);
         siAuditEntryImpl.setUserId(userId);
-
-        if (userName == null) {
-            siAuditEntryImpl.setUserName("");
-        } else {
-            siAuditEntryImpl.setUserName(userName);
-        }
 
         if (createDate == Long.MIN_VALUE) {
             siAuditEntryImpl.setCreateDate(null);
@@ -127,7 +119,6 @@ public class SIAuditEntryCacheModel implements CacheModel<SIAuditEntry>, Externa
         companyId = objectInput.readLong();
 
         userId = objectInput.readLong();
-        userName = objectInput.readUTF();
         createDate = objectInput.readLong();
         siKey = objectInput.readUTF();
 
@@ -146,13 +137,6 @@ public class SIAuditEntryCacheModel implements CacheModel<SIAuditEntry>, Externa
         objectOutput.writeLong(companyId);
 
         objectOutput.writeLong(userId);
-
-        if (userName == null) {
-            objectOutput.writeUTF("");
-        } else {
-            objectOutput.writeUTF(userName);
-        }
-
         objectOutput.writeLong(createDate);
 
         if (siKey == null) {
@@ -176,7 +160,6 @@ public class SIAuditEntryCacheModel implements CacheModel<SIAuditEntry>, Externa
     public long groupId;
     public long companyId;
     public long userId;
-    public String userName;
     public long createDate;
     public String siKey;
     public long processingTime;

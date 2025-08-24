@@ -43,4 +43,14 @@ public interface SIAuditEntry extends PersistedModel, SIAuditEntryModel {
             return SIAuditEntry.class;
         }
     };
+
+    public String getSyncDateFormatted();
+
+    public String getSiteName();
+
+    public String getUser();
+
+    public String getProcesingTimeLabel();
+
+    public String getStatusLabel();
 }

@@ -196,6 +196,14 @@ public class SIAuditEntryLocalServiceUtil {
         return getService().getActionableDynamicQuery();
     }
 
+    public static List<SIAuditEntry> getAuditEntries(int start, int end) {
+        return getService().getAuditEntries(start, end);
+    }
+
+    public static int getAuditEntriesCount() {
+        return getService().getAuditEntriesCount();
+    }
+
     public static com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery
             getIndexableActionableDynamicQuery() {
 

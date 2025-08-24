@@ -1,3 +1,7 @@
 Bundle-Name: Solteq Site Initializer Audit Web
 Bundle-SymbolicName: com.solteq.liferay.site.initializer.audit.web
 Bundle-Version: 1.0.0
+Provide-Capability:\
+   liferay.language.resources;\
+      resource.bundle.base.name="content.Language";\
+      service.ranking:Long="1"

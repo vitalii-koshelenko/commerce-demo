@@ -29,8 +29,6 @@ public class SIAuditEntryTable extends BaseTable<SIAuditEntryTable> {
             createColumn("companyId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
     public final Column<SIAuditEntryTable, Long> userId =
             createColumn("userId", Long.class, Types.BIGINT, Column.FLAG_DEFAULT);
-    public final Column<SIAuditEntryTable, String> userName =
-            createColumn("userName", String.class, Types.VARCHAR, Column.FLAG_DEFAULT);
     public final Column<SIAuditEntryTable, Date> createDate =
             createColumn("createDate", Date.class, Types.TIMESTAMP, Column.FLAG_DEFAULT);
     public final Column<SIAuditEntryTable, String> siKey =

@@ -29,26 +29,32 @@ public class SIAuditEntryLocalServiceImpl extends SIAuditEntryLocalServiceBaseIm
     }
 
     @Override
+    public List<SIAuditEntry> getAuditEntries(int start, int end) {
+        return siAuditEntryLocalService.getSIAuditEntries(start, end);
+    }
+
+    @Override
+    public int getAuditEntriesCount() {
+        return siAuditEntryLocalService.getSIAuditEntriesCount();
+    }
+
+    @Override
     public SIAuditEntry saveSuccessAuditEntry(long groupId, String siKey, long processingTime, String message) {
-        long siAuditEntryId = counterLocalService.increment(SIAuditEntry.class.getName());
-        SIAuditEntry siAuditEntry = siAuditEntryPersistence.create(siAuditEntryId);
-        siAuditEntry.setGroupId(groupId);
-        siAuditEntry.setSiKey(siKey);
-        siAuditEntry.setProcessingTime(processingTime);
-        siAuditEntry.setStatus(SIAuditStatus.SUCCESS);
-        siAuditEntry.setMessage(message);
-        siAuditEntry.setUserId(PrincipalThreadLocal.getUserId());
-        return updateSIAuditEntry(siAuditEntry);
+        return saveAuditEntry(groupId, siKey, processingTime, message, SIAuditStatus.SUCCESS);
     }
 
     @Override
     public SIAuditEntry saveFailedAuditEntry(long groupId, String siKey, long processingTime, String message) {
+        return saveAuditEntry(groupId, siKey, processingTime, message, SIAuditStatus.FAILED);
+    }
+
+    private SIAuditEntry saveAuditEntry(long groupId, String siKey, long processingTime, String message, int status) {
         long siAuditEntryId = counterLocalService.increment(SIAuditEntry.class.getName());
         SIAuditEntry siAuditEntry = siAuditEntryPersistence.create(siAuditEntryId);
+        siAuditEntry.setStatus(status);
         siAuditEntry.setGroupId(groupId);
         siAuditEntry.setSiKey(siKey);
         siAuditEntry.setProcessingTime(processingTime);
-        siAuditEntry.setStatus(SIAuditStatus.FAILED);
         siAuditEntry.setMessage(message);
         siAuditEntry.setUserId(PrincipalThreadLocal.getUserId());
         return updateSIAuditEntry(siAuditEntry);

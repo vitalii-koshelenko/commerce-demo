@@ -186,6 +186,12 @@ public interface SIAuditEntryLocalService extends BaseLocalService, PersistedMod
     public ActionableDynamicQuery getActionableDynamicQuery();
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public List<SIAuditEntry> getAuditEntries(int start, int end);
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public int getAuditEntriesCount();
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public IndexableActionableDynamicQuery getIndexableActionableDynamicQuery();
 
     /**

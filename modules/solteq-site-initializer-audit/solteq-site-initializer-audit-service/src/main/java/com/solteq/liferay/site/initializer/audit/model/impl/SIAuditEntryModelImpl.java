@@ -59,9 +59,9 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
     public static final Object[][] TABLE_COLUMNS = {
         {"siAuditEntryId", Types.BIGINT}, {"groupId", Types.BIGINT},
         {"companyId", Types.BIGINT}, {"userId", Types.BIGINT},
-        {"userName", Types.VARCHAR}, {"createDate", Types.TIMESTAMP},
-        {"siKey", Types.VARCHAR}, {"processingTime", Types.BIGINT},
-        {"status", Types.INTEGER}, {"message", Types.VARCHAR}
+        {"createDate", Types.TIMESTAMP}, {"siKey", Types.VARCHAR},
+        {"processingTime", Types.BIGINT}, {"status", Types.INTEGER},
+        {"message", Types.VARCHAR}
     };
 
     public static final Map<String, Integer> TABLE_COLUMNS_MAP = new HashMap<String, Integer>();
@@ -71,7 +71,6 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
         TABLE_COLUMNS_MAP.put("groupId", Types.BIGINT);
         TABLE_COLUMNS_MAP.put("companyId", Types.BIGINT);
         TABLE_COLUMNS_MAP.put("userId", Types.BIGINT);
-        TABLE_COLUMNS_MAP.put("userName", Types.VARCHAR);
         TABLE_COLUMNS_MAP.put("createDate", Types.TIMESTAMP);
         TABLE_COLUMNS_MAP.put("siKey", Types.VARCHAR);
         TABLE_COLUMNS_MAP.put("processingTime", Types.BIGINT);
@@ -80,7 +79,7 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
     }
 
     public static final String TABLE_SQL_CREATE =
-            "create table sq_SIAuditEntry (siAuditEntryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,userName VARCHAR(75) null,createDate DATE null,siKey VARCHAR(75) null,processingTime LONG,status INTEGER,message VARCHAR(2000) null)";
+            "create table sq_SIAuditEntry (siAuditEntryId LONG not null primary key,groupId LONG,companyId LONG,userId LONG,createDate DATE null,siKey VARCHAR(75) null,processingTime LONG,status INTEGER,message VARCHAR(2000) null)";
 
     public static final String TABLE_SQL_DROP = "drop table sq_SIAuditEntry";
 
@@ -205,7 +204,6 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
             attributeGetterFunctions.put("groupId", SIAuditEntry::getGroupId);
             attributeGetterFunctions.put("companyId", SIAuditEntry::getCompanyId);
             attributeGetterFunctions.put("userId", SIAuditEntry::getUserId);
-            attributeGetterFunctions.put("userName", SIAuditEntry::getUserName);
             attributeGetterFunctions.put("createDate", SIAuditEntry::getCreateDate);
             attributeGetterFunctions.put("siKey", SIAuditEntry::getSiKey);
             attributeGetterFunctions.put("processingTime", SIAuditEntry::getProcessingTime);
@@ -229,7 +227,6 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
             attributeSetterBiConsumers.put("groupId", (BiConsumer<SIAuditEntry, Long>) SIAuditEntry::setGroupId);
             attributeSetterBiConsumers.put("companyId", (BiConsumer<SIAuditEntry, Long>) SIAuditEntry::setCompanyId);
             attributeSetterBiConsumers.put("userId", (BiConsumer<SIAuditEntry, Long>) SIAuditEntry::setUserId);
-            attributeSetterBiConsumers.put("userName", (BiConsumer<SIAuditEntry, String>) SIAuditEntry::setUserName);
             attributeSetterBiConsumers.put("createDate", (BiConsumer<SIAuditEntry, Date>) SIAuditEntry::setCreateDate);
             attributeSetterBiConsumers.put("siKey", (BiConsumer<SIAuditEntry, String>) SIAuditEntry::setSiKey);
             attributeSetterBiConsumers.put(
@@ -319,24 +316,6 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
 
     @Override
     public void setUserUuid(String userUuid) {}
-
-    @Override
-    public String getUserName() {
-        if (_userName == null) {
-            return "";
-        } else {
-            return _userName;
-        }
-    }
-
-    @Override
-    public void setUserName(String userName) {
-        if (_columnOriginalValues == Collections.EMPTY_MAP) {
-            _setColumnOriginalValues();
-        }
-
-        _userName = userName;
-    }
 
     @Override
     public Date getCreateDate() {
@@ -469,7 +448,6 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
         siAuditEntryImpl.setGroupId(getGroupId());
         siAuditEntryImpl.setCompanyId(getCompanyId());
         siAuditEntryImpl.setUserId(getUserId());
-        siAuditEntryImpl.setUserName(getUserName());
         siAuditEntryImpl.setCreateDate(getCreateDate());
         siAuditEntryImpl.setSiKey(getSiKey());
         siAuditEntryImpl.setProcessingTime(getProcessingTime());
@@ -489,7 +467,6 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
         siAuditEntryImpl.setGroupId(this.<Long>getColumnOriginalValue("groupId"));
         siAuditEntryImpl.setCompanyId(this.<Long>getColumnOriginalValue("companyId"));
         siAuditEntryImpl.setUserId(this.<Long>getColumnOriginalValue("userId"));
-        siAuditEntryImpl.setUserName(this.<String>getColumnOriginalValue("userName"));
         siAuditEntryImpl.setCreateDate(this.<Date>getColumnOriginalValue("createDate"));
         siAuditEntryImpl.setSiKey(this.<String>getColumnOriginalValue("siKey"));
         siAuditEntryImpl.setProcessingTime(this.<Long>getColumnOriginalValue("processingTime"));
@@ -577,14 +554,6 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
 
         siAuditEntryCacheModel.userId = getUserId();
 
-        siAuditEntryCacheModel.userName = getUserName();
-
-        String userName = siAuditEntryCacheModel.userName;
-
-        if ((userName != null) && (userName.length() == 0)) {
-            siAuditEntryCacheModel.userName = null;
-        }
-
         Date createDate = getCreateDate();
 
         if (createDate != null) {
@@ -669,7 +638,6 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
     private long _groupId;
     private long _companyId;
     private long _userId;
-    private String _userName;
     private Date _createDate;
     private String _siKey;
     private long _processingTime;
@@ -706,7 +674,6 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
         _columnOriginalValues.put("groupId", _groupId);
         _columnOriginalValues.put("companyId", _companyId);
         _columnOriginalValues.put("userId", _userId);
-        _columnOriginalValues.put("userName", _userName);
         _columnOriginalValues.put("createDate", _createDate);
         _columnOriginalValues.put("siKey", _siKey);
         _columnOriginalValues.put("processingTime", _processingTime);
@@ -733,17 +700,15 @@ public class SIAuditEntryModelImpl extends BaseModelImpl<SIAuditEntry> implement
 
         columnBitmasks.put("userId", 8L);
 
-        columnBitmasks.put("userName", 16L);
+        columnBitmasks.put("createDate", 16L);
 
-        columnBitmasks.put("createDate", 32L);
+        columnBitmasks.put("siKey", 32L);
 
-        columnBitmasks.put("siKey", 64L);
+        columnBitmasks.put("processingTime", 64L);
 
-        columnBitmasks.put("processingTime", 128L);
+        columnBitmasks.put("status", 128L);
 
-        columnBitmasks.put("status", 256L);
-
-        columnBitmasks.put("message", 512L);
+        columnBitmasks.put("message", 256L);
 
         _columnBitmasks = Collections.unmodifiableMap(columnBitmasks);
     }

@@ -221,6 +221,18 @@ public class SIAuditEntryLocalServiceWrapper
     }
 
     @Override
+    public java.util.List<com.solteq.liferay.site.initializer.audit.model.SIAuditEntry> getAuditEntries(
+            int start, int end) {
+
+        return _siAuditEntryLocalService.getAuditEntries(start, end);
+    }
+
+    @Override
+    public int getAuditEntriesCount() {
+        return _siAuditEntryLocalService.getAuditEntriesCount();
+    }
+
+    @Override
     public com.liferay.portal.kernel.dao.orm.IndexableActionableDynamicQuery getIndexableActionableDynamicQuery() {
 
         return _siAuditEntryLocalService.getIndexableActionableDynamicQuery();

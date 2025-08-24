@@ -282,14 +282,14 @@ public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
 
         try {
             _initialize(groupId);
-            // Save Audit Entry
+            // Save Success Audit Entry
             long processingTime = System.currentTimeMillis() - startTime;
             String successMessage =
                     String.format("Initialized '%s' for group '%s' in %d ms", getKey(), groupId, processingTime);
             _siAuditEntryLocalService.saveSuccessAuditEntry(groupId, getKey(), processingTime, successMessage);
             _log.info(successMessage);
         } catch (Exception exception) {
-            // Save Audit Entry
+            // Save Error Audit Entry
             long processingTime = System.currentTimeMillis() - startTime;
             String errorMsg = ExceptionUtil.parseException(exception);
             _siAuditEntryLocalService.saveFailedAuditEntry(groupId, getKey(), processingTime, errorMsg);

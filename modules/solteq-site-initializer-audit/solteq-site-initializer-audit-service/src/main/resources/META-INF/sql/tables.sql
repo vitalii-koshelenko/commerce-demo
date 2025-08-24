@@ -3,7 +3,6 @@ create table sq_SIAuditEntry (
 	groupId LONG,
 	companyId LONG,
 	userId LONG,
-	userName VARCHAR(75) null,
 	createDate DATE null,
 	siKey VARCHAR(75) null,
 	processingTime LONG,

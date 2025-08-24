@@ -119,21 +119,6 @@ public interface SIAuditEntryModel extends BaseModel<SIAuditEntry>, ShardedModel
     public void setUserUuid(String userUuid);
 
     /**
-     * Returns the user name of this si audit entry.
-     *
-     * @return the user name of this si audit entry
-     */
-    @AutoEscape
-    public String getUserName();
-
-    /**
-     * Sets the user name of this si audit entry.
-     *
-     * @param userName the user name of this si audit entry
-     */
-    public void setUserName(String userName);
-
-    /**
      * Returns the create date of this si audit entry.
      *
      * @return the create date of this si audit entry
