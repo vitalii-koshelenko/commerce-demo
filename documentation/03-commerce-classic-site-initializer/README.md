@@ -8,7 +8,7 @@ Documentation: https://learn.liferay.com/w/dxp/commerce/starting-a-store/using-t
 
 Commerce Classic Site Initializer is a modern way to set up a new Liferay Commerce site using brand-new Liferay UI features for orders, account management and checkout process.
 
-_**Note**: this feature is behind a beta feature flag (LPD-20379), and should be enabled in Feature Flags:_
+_**Note**: this feature is behind a beta feature flag ([LPD-20379](https://liferay.atlassian.net/browse/LPD-20379)), and should be enabled in Feature Flags:_
 
 ![01-feature-flag.png](images/01-feature-flag.png)
 
