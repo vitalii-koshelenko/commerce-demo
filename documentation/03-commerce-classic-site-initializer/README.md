@@ -164,3 +164,61 @@ The Product Detail displays detailed information about the selected product:
 ![12-product-detail.png](images/12-product-detail.png)
 
 The [Product Details](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-product-content-web/src/main/java/com/liferay/commerce/product/content/web/internal/portlet/CPContentPortlet.java) widget is used on this page.
+
+#### Orders Page
+
+The Orders page displays the list of orders for selected account.
+
+![13-orders.png](images/13-orders.png)
+
+The [Orders Data Set](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-order-content-web/src/main/java/com/liferay/commerce/order/content/web/internal/fragment/renderer/OrdersDataSetFragmentRenderer.java) component is used for displaying the order list.
+
+_**Notes**: 
+- the Orders Data Set is a FragmentRenderer fragment, available only under LPD-20379 feature flag.
+- the same for Pending Orders / Placed Orders (just different 'Order status' configuration)_
+
+#### Checkout Page
+
+The Checkout page display a multistep form for order submission:
+
+![14-checkout-01.png](images/14-checkout-01.png)
+
+![15-checkout-02.png](images/15-checkout-02.png)
+
+![16-checkout-03.png](images/16-checkout-03.png)
+
+The [Checkout](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-checkout-web/src/main/java/com/liferay/commerce/checkout/web/internal/portlet/CommerceCheckoutPortlet.java) portlet is used for the checkout process.
+
+
+#### Returns Page
+
+The Returns page provides the possibility for customer to manage returns.
+
+The [CommerceReturnContentPortlet](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-order-content-web/src/main/java/com/liferay/commerce/order/content/web/internal/portlet/CommerceReturnContentPortlet.java) widget is used for this functionality.
+
+
+#### Account Management Page
+
+The  Account Management page provides the possibility for customer to view/manage his account(s).
+
+![17-account-management.png](images/17-account-management.png)
+
+The [CommerceReturnContentPortlet](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-order-content-web/src/main/java/com/liferay/commerce/order/content/web/internal/portlet/CommerceReturnContentPortlet.java) widget is used for this functionality.
+
+
+#### Lists Page
+
+The Lists page displays the wishlists and products added to them.
+
+![18-lists.png](images/18-lists.png)
+
+The [MyCommerceWishListsPortlet](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-wish-list-web/src/main/java/com/liferay/commerce/wish/list/web/internal/portlet/MyCommerceWishListsPortlet.java) and [CommerceWishListContentPortlet](https://github.com/liferay/liferay-portal/blob/master/modules/apps/commerce/commerce-wish-list-web/src/main/java/com/liferay/commerce/wish/list/web/internal/portlet/CommerceWishListContentPortlet.java) widgets are used here.
+
+
+#### Search Page
+
+The Search page displays the search results:
+
+![19-search.png](images/19-search.png)
+
+Standard Search Results widget and Search Facets are used for search functionality.
