@@ -29,6 +29,10 @@ Channel configuration options:
 9. Countries
 10. Eligibility: all accounts or specific account(s).
 
+### Currencies
+
+Liferay comes with multiple [currencies](https://learn.liferay.com/w/dxp/commerce/store-management/currencies) pre-configured for use. If a desired currency is not already included, you can add a new one.
+
 ## Product Management
 
 ### Catalogs
