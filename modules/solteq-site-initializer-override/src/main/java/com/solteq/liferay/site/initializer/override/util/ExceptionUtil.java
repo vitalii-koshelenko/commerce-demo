@@ -1,21 +1,21 @@
 package com.solteq.liferay.site.initializer.override.util;
 
+import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.util.StackTraceUtil;
-import com.liferay.portal.kernel.util.Validator;
 
 public class ExceptionUtil {
-
-    private static final String STR_CAUSED_BY = "Caused by: ";
-    private static final String STR_AT = "at ";
-
-    private static final String ERROR_MESSAGE = "Error: %s, cause: %s";
 
     public static String parseException(Exception e) {
         // Get Exception StackTrace
         String stackTrace = StackTraceUtil.getStackTrace(e);
-        // Get the last "Caused by" Statement
-        String errorMessage = e.getMessage();
-        String causedBy = StringUtil.lastSubstringBetween(stackTrace, STR_CAUSED_BY, STR_AT);
-        return Validator.isBlank(causedBy) ? errorMessage : String.format(ERROR_MESSAGE, errorMessage, causedBy);
+        // Return the first two lines of stacktrace
+        String[] lines = stackTrace.split(StringPool.NEW_LINE);
+        if (lines.length > 1) {
+            return lines[0] + lines[1];
+        } else if (lines.length == 1) {
+            return lines[0];
+        } else {
+            return stackTrace;
+        }
     }
 }

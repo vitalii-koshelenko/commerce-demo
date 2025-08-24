@@ -8,6 +8,8 @@ import java.util.List;
 
 import com.liferay.portal.aop.AopService;
 import com.liferay.portal.kernel.security.auth.PrincipalThreadLocal;
+import com.liferay.portal.kernel.transaction.Propagation;
+import com.liferay.portal.kernel.transaction.Transactional;
 
 import com.solteq.liferay.site.initializer.audit.constants.SIAuditStatus;
 import com.solteq.liferay.site.initializer.audit.model.SIAuditEntry;
@@ -39,11 +41,13 @@ public class SIAuditEntryLocalServiceImpl extends SIAuditEntryLocalServiceBaseIm
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SIAuditEntry saveSuccessAuditEntry(long groupId, String siKey, long processingTime, String message) {
         return saveAuditEntry(groupId, siKey, processingTime, message, SIAuditStatus.SUCCESS);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public SIAuditEntry saveFailedAuditEntry(long groupId, String siKey, long processingTime, String message) {
         return saveAuditEntry(groupId, siKey, processingTime, message, SIAuditStatus.FAILED);
     }

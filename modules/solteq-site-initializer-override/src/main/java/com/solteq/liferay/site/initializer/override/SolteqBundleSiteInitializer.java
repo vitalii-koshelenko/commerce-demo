@@ -68,6 +68,7 @@ import com.liferay.site.navigation.type.SiteNavigationMenuItemTypeRegistry;
 import com.liferay.style.book.zip.processor.StyleBookEntryZipProcessor;
 import com.liferay.template.service.TemplateEntryLocalService;
 
+import com.solteq.liferay.site.initializer.audit.model.SIAuditEntry;
 import com.solteq.liferay.site.initializer.audit.service.SIAuditEntryLocalService;
 import com.solteq.liferay.site.initializer.override.util.ExceptionUtil;
 
@@ -292,8 +293,11 @@ public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
             // Save Error Audit Entry
             long processingTime = System.currentTimeMillis() - startTime;
             String errorMsg = ExceptionUtil.parseException(exception);
-            _siAuditEntryLocalService.saveFailedAuditEntry(groupId, getKey(), processingTime, errorMsg);
-            _log.error(exception);
+            SIAuditEntry siAuditEntry =
+                    _siAuditEntryLocalService.saveFailedAuditEntry(groupId, getKey(), processingTime, errorMsg);
+            _log.error(String.format(
+                    "Failed to sync Site Initializer '%s' for group #%d. Saved SIAuditEntry #%d. Error message: %s.",
+                    getKey(), groupId, siAuditEntry.getSiAuditEntryId(), errorMsg));
             throw new InitializationException(exception);
         } finally {
             ServiceContextThreadLocal.popServiceContext();
