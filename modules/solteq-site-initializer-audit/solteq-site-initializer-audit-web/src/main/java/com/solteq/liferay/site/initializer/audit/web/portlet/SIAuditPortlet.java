@@ -11,7 +11,6 @@ import org.osgi.service.component.annotations.Component;
 @Component(
         property = {
             "com.liferay.portlet.display-category=" + SIAuditPortletKeys.CATEGORY_NAME,
-            "com.liferay.portlet.icon=/icons/audit.png",
             "com.liferay.portlet.instanceable=false",
             "javax.portlet.display-name=" + SIAuditPortletKeys.DISPLAY_NAME,
             "javax.portlet.expiration-cache=0",

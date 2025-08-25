@@ -1,4 +1,4 @@
-package com.solteq.liferay.site.initializer.audit.web.portlet.actions;
+package com.solteq.liferay.site.initializer.audit.web.portlet.actions.audit;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
