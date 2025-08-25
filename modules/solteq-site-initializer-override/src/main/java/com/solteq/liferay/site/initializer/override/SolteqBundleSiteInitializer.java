@@ -51,9 +51,11 @@ import com.liferay.portal.configuration.module.configuration.ConfigurationProvid
 import com.liferay.portal.kernel.json.JSONFactory;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
+import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.service.*;
 import com.liferay.portal.kernel.settings.ArchivedSettingsFactory;
 import com.liferay.portal.kernel.util.Portal;
+import com.liferay.portal.kernel.util.UnicodeProperties;
 import com.liferay.portal.kernel.zip.ZipWriterFactory;
 import com.liferay.portal.language.override.service.PLOEntryLocalService;
 import com.liferay.portal.security.service.access.policy.service.SAPEntryLocalService;
@@ -298,10 +300,35 @@ public class SolteqBundleSiteInitializer extends AbstractBundleSiteInitializer {
             _log.error(String.format(
                     "Failed to sync Site Initializer '%s' for group #%d. Saved SIAuditEntry #%d. Error message: %s.",
                     getKey(), groupId, siAuditEntry.getSiAuditEntryId(), errorMsg));
+            exception.printStackTrace();
             throw new InitializationException(exception);
         } finally {
             ServiceContextThreadLocal.popServiceContext();
         }
+    }
+
+    @Override
+    protected void _updateGroupSiteInitializerKey(long groupId) throws Exception {
+        // Commented for PROD support - as DEV Feature Flag LPS-165482 can't be activated there
+        /*
+        if (!FeatureFlagManagerUtil.isEnabled("LPS-165482")) {
+            return;
+        }
+        */
+        Group group = _groupLocalService.getGroup(groupId);
+
+        UnicodeProperties typeSettingsUnicodeProperties = group.getTypeSettingsProperties();
+
+        // Save SI Key
+        String siteInitializerKey = getKey();
+        typeSettingsUnicodeProperties.setProperty("siteInitializerKey", siteInitializerKey);
+
+        // Save SI Bundle Timestamp
+        long bundleTimestamp = _siteBundle.getLastModified();
+        typeSettingsUnicodeProperties.setProperty("bundleTimestamp", String.valueOf(bundleTimestamp));
+        _log.info("bundleTimestamp: " + bundleTimestamp);
+
+        _groupLocalService.updateGroup(group.getGroupId(), typeSettingsUnicodeProperties.toString());
     }
 
     protected static final Log _log = LogFactoryUtil.getLog(SolteqBundleSiteInitializer.class);

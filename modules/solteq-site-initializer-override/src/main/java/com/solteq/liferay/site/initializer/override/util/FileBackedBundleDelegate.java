@@ -59,6 +59,15 @@ public class FileBackedBundleDelegate {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Bundle: " + _symbolicName;
+    }
+
+    public long getLastModified() {
+        return _file != null ? _file.lastModified() : 0;
+    }
+
     public <T extends Object> T adapt(Class<T> clazz) {
         if (clazz != BundleWiring.class) {
             throw new IllegalArgumentException("Unsupported clazz " + clazz);
