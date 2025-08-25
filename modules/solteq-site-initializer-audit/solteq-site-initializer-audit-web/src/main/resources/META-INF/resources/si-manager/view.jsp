@@ -17,6 +17,8 @@
                                         <th><liferay-ui:message key="si-site.si-key" /></th>
                                         <th><liferay-ui:message key="si-site.si-version" /></th>
                                         <th><liferay-ui:message key="si-site.deployed-version" /></th>
+                                        <th><liferay-ui:message key="si-site.last-sync-date" /></th>
+                                        <th><liferay-ui:message key="si-site.last-sync-status" /></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -29,6 +31,13 @@
                                             <td>${siSite.siKey}</td>
                                             <td>${siSite.siteVersion}</td>
                                             <td>${siSite.siVersion}</td>
+                                            <td>${siSite.lastSyncDate}</td>
+                                            <td>
+                                                <clay:badge label="${siSite.lastSyncStatus}" cssClass="si-manager-badge"
+                                                            displayType="${siSite.lastSyncDisplayType}"
+                                                />
+                                                <liferay-ui:icon image="help" message="${siSite.lastSyncMessage}"  />
+                                            </td>
                                         </tr>
                                     </c:forEach>
                                 </tbody>

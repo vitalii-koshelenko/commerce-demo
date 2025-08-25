@@ -7,12 +7,19 @@ import java.util.List;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.DynamicQuery;
 import com.liferay.portal.kernel.dao.orm.RestrictionsFactoryUtil;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.GroupTable;
 import com.liferay.portal.kernel.service.GroupLocalService;
+import com.liferay.portal.kernel.util.ListUtil;
+import com.liferay.portal.kernel.util.StringUtil;
+import com.liferay.portal.kernel.util.URLUtil;
 
+import com.solteq.liferay.site.initializer.audit.model.SIAuditEntry;
+import com.solteq.liferay.site.initializer.audit.service.SIAuditEntryLocalService;
+import com.solteq.liferay.site.initializer.audit.web.portlet.model.CXSite;
 import com.solteq.liferay.site.initializer.audit.web.portlet.model.SISite;
 import com.solteq.liferay.site.initializer.audit.web.portlet.service.SISiteService;
 
@@ -53,23 +60,56 @@ public class SISiteServiceImpl implements SISiteService {
                 String siKey = siGroup.getTypeSettingsProperty(SI_KEY);
                 String siteVersion = siGroup.getTypeSettingsProperty(BUNDLE_TIMESTAMP);
                 String siVersion = getBundleVersion(siKey);
-                SISite siSite = new SISite(siSiteId++, groupId, name, friendlyURL, siKey, siteVersion, siVersion);
+                String lastSyncDate = StringPool.BLANK;
+                String lastSyncStatus = StringPool.BLANK;
+                String lastSyncDisplayType = "info";
+                String lastSyncMessage = StringPool.BLANK;
+                SIAuditEntry siSyncAuditEntry = getSISyncAuditEntry(groupId);
+                if (siSyncAuditEntry != null) {
+                    lastSyncDate = siSyncAuditEntry.getSyncDateFormatted();
+                    lastSyncStatus = siSyncAuditEntry.getStatusLabel();
+                    lastSyncDisplayType = siSyncAuditEntry.getDisplayType();
+                    lastSyncMessage = siSyncAuditEntry.getMessage();
+                }
+                SISite siSite = new SISite(
+                        siSiteId++,
+                        groupId,
+                        name,
+                        friendlyURL,
+                        siKey,
+                        siteVersion,
+                        siVersion,
+                        lastSyncDate,
+                        lastSyncStatus,
+                        lastSyncDisplayType,
+                        lastSyncMessage);
                 siSites.add(siSite);
             }
+            siSites.sort((o1, o2) -> Long.compare(o2.getSiteVersionTimestamp(), o1.getSiteVersionTimestamp()));
         } catch (Exception e) {
             _log.error("Error while getting sites: " + e.getMessage());
         }
         return siSites;
     }
 
+    private SIAuditEntry getSISyncAuditEntry(long groupId) {
+        List<SIAuditEntry> siteAuditEntries = siAuditEntryLocalService.getSiteAuditEntries(groupId);
+        return ListUtil.isNotEmpty(siteAuditEntries) ? siteAuditEntries.get(0) : null;
+    }
+
     private String getBundleVersion(String siKey) {
         String bundleVersion = StringPool.BLANK;
         try {
             Bundle[] bundles = _bundleContext.getBundles();
+            // Filter bundles by Symbolic Name
             Bundle targetBundle = Arrays.stream(bundles)
                     .filter(bnd -> siKey.equals(bnd.getSymbolicName()))
                     .findFirst()
                     .orElse(null);
+            if (targetBundle == null) {
+                // For CX Site Initializers we need to filter bundles by site name
+                targetBundle = getCXBundle(bundles, siKey);
+            }
             if (targetBundle != null) {
                 bundleVersion = String.valueOf(targetBundle.getLastModified());
             }
@@ -80,8 +120,27 @@ public class SISiteServiceImpl implements SISiteService {
         return bundleVersion;
     }
 
+    private Bundle getCXBundle(Bundle[] bundles, String siteName) {
+        return Arrays.stream(bundles)
+                .filter(bundle -> {
+                    try {
+                        String cxSiteJSON = URLUtil.toString(bundle.getEntry("site-initializer/site-initializer.json"));
+                        CXSite siSite = JSONFactoryUtil.looseDeserialize(cxSiteJSON, CXSite.class);
+                        String cxSiteName = siSite.getName();
+                        return StringUtil.equals(cxSiteName, siteName);
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .findFirst()
+                .orElse(null);
+    }
+
     @Reference
     private GroupLocalService groupLocalService;
+
+    @Reference
+    private SIAuditEntryLocalService siAuditEntryLocalService;
 
     private static final Log _log = LogFactoryUtil.getLog(SISiteServiceImpl.class);
 }
