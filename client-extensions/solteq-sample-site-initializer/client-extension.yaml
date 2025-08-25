@@ -1,0 +1,13 @@
+solteq-sample-site-initializer:
+    name: Solteq Sample Site Initializer
+    oAuthApplicationHeadlessServer: solteq-sample-site-initializer-oauth-application-headless-server
+    siteExternalReferenceCode: SOLTEQ_SAMPLE
+    siteName: Solteq Sample
+    type: siteInitializer
+solteq-sample-site-initializer-oauth-application-headless-server:
+    .serviceAddress: localhost:8080
+    .serviceScheme: http
+    name: Solteq Sample Site Initializer OAuth Application Headless Server
+    scopes:
+        -   Liferay.Headless.Site.everything
+    type: oAuthApplicationHeadlessServer
